@@ -23,6 +23,8 @@ namespace FamilyTreeManager
         public MainWindow()
         {
             InitializeComponent();
+            GedcomFileReader gedcomFileReader = new GedcomFileReader();
+            gedcomFileReader.ReadGedcomFile(@"C:\Users\Marek\Downloads\m0kd51_64943600221ywr561r4h45_A.ged");
         }
     }
 }
