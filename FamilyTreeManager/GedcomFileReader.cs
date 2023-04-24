@@ -23,27 +23,40 @@ namespace FamilyTreeManager
             {
                 string line;
                 List<string> onePersonLines = null;
+                List<string> oneFamilyLines = null;
 
                 do
                 {
                     line = sr.ReadLine();
                 } while (!line.StartsWith("0 @"));
 
-                while (!sr.EndOfStream)
+                while (!line.StartsWith("0 @F"))
                 {
                     if (line.StartsWith("0 @I"))
                     {
                         ExtractPersonInfo(onePersonLines);
                         onePersonLines = new List<string>();
                     }
-                    else if (line.StartsWith("0 @F"))
-                    {
-                        
-                    }
 
                     onePersonLines.Add(line);
                     line = sr.ReadLine();
                 }
+
+                ExtractPersonInfo(onePersonLines);
+
+                while (!sr.EndOfStream)
+                {
+                    if (line.StartsWith("0 @F"))
+                    {
+                        ExtractFamilyInfo(oneFamilyLines);
+                        oneFamilyLines = new List<string>();
+                    }
+
+                    oneFamilyLines.Add(line);
+                    line = sr.ReadLine();
+                }
+
+                ExtractFamilyInfo(oneFamilyLines);
             }
         }
 
@@ -100,10 +113,23 @@ namespace FamilyTreeManager
                 else if (currentLine.StartsWith("2 DATE"))
                 {
                     temp = currentLine.Split();
+                    int day = 0, month = 0, year = 0;
 
-                    int day = int.Parse(temp[2]);
-                    int month = (int)Enum.Parse(typeof(Months), temp[3]) + 1;
-                    int year = int.Parse(temp[4]);
+                    if (temp.Length == 5)
+                    {
+                        day = int.Parse(temp[2]);
+                        month = (int)Enum.Parse(typeof(Months), temp[3]) + 1;
+                        year = int.Parse(temp[4]);
+                    }
+                    else if (temp.Length == 4)
+                    {
+                        month = (int)Enum.Parse(typeof(Months), temp[2]) + 1;
+                        year = int.Parse(temp[3]);
+                    }
+                    else if (temp.Length == 3)
+                    {
+                        year = int.Parse(temp[2]);
+                    }
 
                     if (isThisBirthRecord)
                         person.BirthDate = new DateTime(year, month, day);
@@ -143,6 +169,11 @@ namespace FamilyTreeManager
             }
 
             people.Add(person);
+        }
+
+        private void ExtractFamilyInfo(List<string> oneFamilyLines)
+        {
+
         }
     }
 }
