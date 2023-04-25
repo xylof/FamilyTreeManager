@@ -8,12 +8,19 @@ namespace FamilyTreeManager
 {
     class Family
     {
-        public enum RelationTypeEnum { Partner, Enga, Marr }
+        public enum RelationTypeEnum { Partner, Engagement, Marriage }
 
         public string ID { get; set; }
-        public Person Father { get; set; }
-        public Person Mother { get; set; }
+        public Person Husband { get; set; }
+        public Person Wife { get; set; }
         public List<Person> Children { get; set; }
         public RelationTypeEnum RelationType { get; set; }
+        public DateTime WeddingDate { get; set; }
+        public string WeddingPlace { get; set; }
+
+        public Family()
+        {
+            Children = new List<Person>();
+        }
     }
 }

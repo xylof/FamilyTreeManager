@@ -16,6 +16,7 @@ namespace FamilyTreeManager
         };
 
         public List<Person> people = new List<Person>();
+        public List<Family> families = new List<Family>();
 
         public void ReadGedcomFile(string filePath)
         {
@@ -173,7 +174,75 @@ namespace FamilyTreeManager
 
         private void ExtractFamilyInfo(List<string> oneFamilyLines)
         {
+            if (oneFamilyLines == null)
+                return;
 
+            Family family = new Family();
+            string data;
+
+            foreach (string currentLine in oneFamilyLines)
+            {
+                string[] temp;
+
+                if (currentLine.StartsWith("0 @F"))
+                {
+                    Regex regex = new Regex("@.*?@");
+                    Match match = regex.Match(currentLine);
+
+                    family.ID = match.Value;
+                }
+                else if (currentLine.StartsWith("1 HUSB"))
+                {
+                    temp = currentLine.Split();
+                    data = temp.Last();
+                    family.Husband = people.Find(p => p.ID == data);
+                }
+                else if (currentLine.StartsWith("1 WIFE"))
+                {
+                    temp = currentLine.Split();
+                    data = temp.Last();
+                    family.Wife = people.Find(p => p.ID == data);
+                }
+                else if (currentLine.StartsWith("1 CHIL"))
+                {
+                    temp = currentLine.Split();
+                    data = temp.Last();
+                    family.Children.Add(people.Find(p => p.ID == data));
+                }
+                else if (currentLine.StartsWith("1 MARR"))
+                    family.RelationType = Family.RelationTypeEnum.Marriage;
+                else if (currentLine.StartsWith("1 ENGA"))
+                    family.RelationType = Family.RelationTypeEnum.Engagement;
+                else if (currentLine.EndsWith("PARTNERS"))
+                    family.RelationType = Family.RelationTypeEnum.Partner;
+                else if (currentLine.StartsWith("2 DATE"))
+                {
+                    temp = currentLine.Split();
+                    int day = 0, month = 0, year = 0;
+
+                    if (temp.Length == 5)
+                    {
+                        day = int.Parse(temp[2]);
+                        month = (int)Enum.Parse(typeof(Months), temp[3]) + 1;
+                        year = int.Parse(temp[4]);
+                    }
+                    else if (temp.Length == 4)
+                    {
+                        month = (int)Enum.Parse(typeof(Months), temp[2]) + 1;
+                        year = int.Parse(temp[3]);
+                    }
+                    else if (temp.Length == 3)
+                    {
+                        year = int.Parse(temp[2]);
+                    }
+
+                    family.WeddingDate = new DateTime(year, month, day);
+                }
+                else if (currentLine.StartsWith("2 PLAC"))
+                    family.WeddingPlace = currentLine.Remove(0, 7); // Usuwa pierwsze 7 znaków z łańcucha string
+            }
+
+            families.Add(family);
         }
     }
 }
