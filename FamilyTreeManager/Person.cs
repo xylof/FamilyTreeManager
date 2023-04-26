@@ -22,19 +22,28 @@ namespace FamilyTreeManager
         public string DeathPlace { get; set; }
         public bool IsDeathDateEstimated { get; set; }
         public bool IsDead { get; set; }
-        public string FamsID { get; set; }
-        public string FamcID { get; set; }
+        //public string FamsID { get; set; }
+        //public string FamcID { get; set; }
         public Dictionary<string, double> Nationalities { get; set; }
+        public Person Father { get; set; }
+        public Person Mother { get; set; }
+        public List<Person> Children { get; set; }
 
         public Person()
         {
             Nationalities = new Dictionary<string, double>();
+            Children = new List<Person>();
         }
 
         public void FillNationalities(string[] nationsAndNumbers)
         {
             for (int i = 0; i < nationsAndNumbers.Length; i += 2)
                 Nationalities.Add(nationsAndNumbers[i], double.Parse(nationsAndNumbers[i + 1]));
+        }
+
+        public void AddChild(Person child)
+        {
+            Children.Add(child);
         }
 
         public override string ToString()

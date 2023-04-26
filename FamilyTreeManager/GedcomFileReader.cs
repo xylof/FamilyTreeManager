@@ -218,7 +218,7 @@ namespace FamilyTreeManager
                 {
                     temp = currentLine.Split();
                     data = temp.Last();
-                    family.Children.Add(people.Find(p => p.ID == data));
+                    family.AddChild(people.Find(p => p.ID == data));
                 }
                 else if (currentLine.StartsWith("1 MARR"))
                     family.RelationType = Family.RelationTypeEnum.Marriage;
@@ -255,6 +255,7 @@ namespace FamilyTreeManager
                     family.WeddingPlace = currentLine.Remove(0, 7); // Usuwa pierwsze 7 znaków z łańcucha string
             }
 
+            family.CompleteFamilyConnections();
             families.Add(family);
         }
 

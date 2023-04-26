@@ -22,6 +22,29 @@ namespace FamilyTreeManager
         public Family()
         {
             Children = new List<Person>();
+        }       
+
+        public void AddChild(Person child)
+        {
+            Children.Add(child);
+        }
+
+        public void CompleteFamilyConnections()
+        {
+            foreach (Person child in Children)
+            {
+                if (Husband != null)
+                {
+                    child.Father = Husband;
+                    Husband.AddChild(child);
+                }
+
+                if (Wife != null)
+                {
+                    child.Mother = Wife;
+                    Wife.AddChild(child);
+                }
+            }
         }
 
         public override string ToString()
