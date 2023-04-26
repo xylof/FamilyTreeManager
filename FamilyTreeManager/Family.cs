@@ -22,5 +22,10 @@ namespace FamilyTreeManager
         {
             Children = new List<Person>();
         }
+
+        public override string ToString()
+        {
+            return $"{Husband} + {Wife}";
+        }
     }
 }

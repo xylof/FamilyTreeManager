@@ -153,20 +153,20 @@ namespace FamilyTreeManager
                     temp = data.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
                     person.FillNationalities(temp);
                 }
-                else if (currentLine.StartsWith("1 FAMS"))
-                {
-                    Regex regex = new Regex("@.*?@");
-                    Match match = regex.Match(currentLine);
+                //else if (currentLine.StartsWith("1 FAMS"))
+                //{
+                //    Regex regex = new Regex("@.*?@");
+                //    Match match = regex.Match(currentLine);
 
-                    person.FamsID = match.Value;
-                }
-                else if (currentLine.StartsWith("1 FAMC"))
-                {
-                    Regex regex = new Regex("@.*?@");
-                    Match match = regex.Match(currentLine);
+                //    person.FamsID = match.Value;
+                //}
+                //else if (currentLine.StartsWith("1 FAMC"))
+                //{
+                //    Regex regex = new Regex("@.*?@");
+                //    Match match = regex.Match(currentLine);
 
-                    person.FamcID = match.Value;
-                }
+                //    person.FamcID = match.Value;
+                //}
             }
 
             people.Add(person);

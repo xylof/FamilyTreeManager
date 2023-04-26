@@ -37,6 +37,8 @@ namespace FamilyTreeManager
 
         public override string ToString()
         {
+            if (MarriedSurname != null)
+                return $"{Name} {MarriedSurname} z d. {Surname}";
             return $"{Name} {Surname}";
         }
     }
