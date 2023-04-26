@@ -17,6 +17,7 @@ namespace FamilyTreeManager
         public RelationTypeEnum RelationType { get; set; }
         public DateTime WeddingDate { get; set; }
         public string WeddingPlace { get; set; }
+        public bool IsWeddingDateEstimated { get; set; }
 
         public Family()
         {

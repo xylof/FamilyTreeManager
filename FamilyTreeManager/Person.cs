@@ -17,8 +17,10 @@ namespace FamilyTreeManager
         public SexEnum Sex { get; set; }
         public DateTime BirthDate { get; set; }
         public string BirthPlace { get; set; }
+        public bool IsBirthDateEstimated { get; set; }
         public DateTime DeathDate { get; set; }
         public string DeathPlace { get; set; }
+        public bool IsDeathDateEstimated { get; set; }
         public bool IsDead { get; set; }
         public string FamsID { get; set; }
         public string FamcID { get; set; }

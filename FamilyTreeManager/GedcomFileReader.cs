@@ -15,6 +15,11 @@ namespace FamilyTreeManager
             JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
         };
 
+        private enum RecordType
+        {
+            None, Birth, Death, Marriage
+        };
+
         public List<Person> people = new List<Person>();
         public List<Family> families = new List<Family>();
 
@@ -68,7 +73,8 @@ namespace FamilyTreeManager
 
             Person person = new Person();
             string data;
-            bool isThisBirthRecord = false;
+            //bool isThisBirthRecord = false;
+            RecordType recordType = RecordType.None;
 
             foreach (string currentLine in onePersonLines)
             {
@@ -105,43 +111,47 @@ namespace FamilyTreeManager
                     person.Sex = sex == 'M' ? Person.SexEnum.M : Person.SexEnum.F;
                 }
                 else if (currentLine.StartsWith("1 BIRT"))
-                    isThisBirthRecord = true;
+                    //isThisBirthRecord = true;
+                    recordType = RecordType.Birth;
                 else if (currentLine.StartsWith("1 DEAT"))
                 {
-                    isThisBirthRecord = false;
+                    //isThisBirthRecord = false;
+                    recordType = RecordType.Death;
                     person.IsDead = true;
                 }
                 else if (currentLine.StartsWith("2 DATE"))
                 {
                     temp = currentLine.Split();
-                    int day = 0, month = 0, year = 0;
+                    ExtractDate(temp, recordType, person);
 
-                    if (temp.Length == 5)
-                    {
-                        day = int.Parse(temp[2]);
-                        month = (int)Enum.Parse(typeof(Months), temp[3]) + 1;
-                        year = int.Parse(temp[4]);
-                    }
-                    else if (temp.Length == 4)
-                    {
-                        month = (int)Enum.Parse(typeof(Months), temp[2]) + 1;
-                        year = int.Parse(temp[3]);
-                    }
-                    else if (temp.Length == 3)
-                    {
-                        year = int.Parse(temp[2]);
-                    }
+                    //int day = 0, month = 0, year = 0;
 
-                    if (isThisBirthRecord)
-                        person.BirthDate = new DateTime(year, month, day);
-                    else
-                        person.DeathDate = new DateTime(year, month, day);
+                    //if (temp.Length == 5)
+                    //{
+                    //    day = int.Parse(temp[2]);
+                    //    month = (int)Enum.Parse(typeof(Months), temp[3]) + 1;
+                    //    year = int.Parse(temp[4]);
+                    //}
+                    //else if (temp.Length == 4)
+                    //{
+                    //    month = (int)Enum.Parse(typeof(Months), temp[2]) + 1;
+                    //    year = int.Parse(temp[3]);
+                    //}
+                    //else if (temp.Length == 3)
+                    //{
+                    //    year = int.Parse(temp[2]);
+                    //}
+
+                    //if (recordType == RecordType.Birth)
+                    //    person.BirthDate = new DateTime(year, month, day);
+                    //else
+                    //    person.DeathDate = new DateTime(year, month, day);
                 }
                 else if (currentLine.StartsWith("2 PLAC"))
                 {
                     data = currentLine.Remove(0, 7); // Usuwa pierwsze 7 znaków z łańcucha string
 
-                    if (isThisBirthRecord)
+                    if (recordType == RecordType.Birth)
                         person.BirthPlace = data;
                     else
                         person.DeathPlace = data;
@@ -179,6 +189,7 @@ namespace FamilyTreeManager
 
             Family family = new Family();
             string data;
+            RecordType recordType = RecordType.Marriage;
 
             foreach (string currentLine in oneFamilyLines)
             {
@@ -218,31 +229,91 @@ namespace FamilyTreeManager
                 else if (currentLine.StartsWith("2 DATE"))
                 {
                     temp = currentLine.Split();
-                    int day = 0, month = 0, year = 0;
+                    ExtractDate(temp, recordType, family);
 
-                    if (temp.Length == 5)
-                    {
-                        day = int.Parse(temp[2]);
-                        month = (int)Enum.Parse(typeof(Months), temp[3]) + 1;
-                        year = int.Parse(temp[4]);
-                    }
-                    else if (temp.Length == 4)
-                    {
-                        month = (int)Enum.Parse(typeof(Months), temp[2]) + 1;
-                        year = int.Parse(temp[3]);
-                    }
-                    else if (temp.Length == 3)
-                    {
-                        year = int.Parse(temp[2]);
-                    }
+                    //int day = 0, month = 0, year = 0;
 
-                    family.WeddingDate = new DateTime(year, month, day);
+                    //if (temp.Length == 5)
+                    //{
+                    //    day = int.Parse(temp[2]);
+                    //    month = (int)Enum.Parse(typeof(Months), temp[3]) + 1;
+                    //    year = int.Parse(temp[4]);
+                    //}
+                    //else if (temp.Length == 4)
+                    //{
+                    //    month = (int)Enum.Parse(typeof(Months), temp[2]) + 1;
+                    //    year = int.Parse(temp[3]);
+                    //}
+                    //else if (temp.Length == 3)
+                    //{
+                    //    year = int.Parse(temp[2]);
+                    //}
+
+                    //family.WeddingDate = new DateTime(year, month, day);
                 }
                 else if (currentLine.StartsWith("2 PLAC"))
                     family.WeddingPlace = currentLine.Remove(0, 7); // Usuwa pierwsze 7 znaków z łańcucha string
             }
 
             families.Add(family);
+        }
+
+        private void ExtractDate(string[] temp, RecordType recordType, Person person)
+        {
+            ExtractDate(temp, recordType, person, null);
+        }
+
+        private void ExtractDate(string[] temp, RecordType recordType, Family family)
+        {
+            ExtractDate(temp, recordType, null, family);
+        }
+
+        private void ExtractDate(string[] temp, RecordType recordType, Person person, Family family)
+        {
+            int day = 0, month = 0, year = 0;
+            const int dayMonthAndYearRecordLength = 5;
+            const int monthAndYearRecordLength = 4;
+            const int yearRecordLength = 3;
+            int change = 0;
+            bool isThisDateEstimated = false;
+
+            if (temp[2] == "ABT")
+            {
+                change = 1;
+                isThisDateEstimated = true;
+            }
+
+            if (temp.Length == dayMonthAndYearRecordLength + change)
+            {
+                day = int.Parse(temp[2 + change]);
+                month = (int)Enum.Parse(typeof(Months), temp[3 + change]) + 1;
+                year = int.Parse(temp[4 + change]);
+            }
+            else if (temp.Length == monthAndYearRecordLength + change)
+            {
+                month = (int)Enum.Parse(typeof(Months), temp[2 + change]) + 1;
+                year = int.Parse(temp[3 + change]);
+            }
+            else if (temp.Length == yearRecordLength + change)
+            {
+                year = int.Parse(temp[2 + change]);
+            }
+
+            if (recordType == RecordType.Birth)
+            {
+                person.BirthDate = new DateTime(year, month, day);
+                person.IsBirthDateEstimated = isThisDateEstimated;
+            }
+            else if (recordType == RecordType.Death)
+            {
+                person.DeathDate = new DateTime(year, month, day);
+                person.IsDeathDateEstimated = isThisDateEstimated;
+            }
+            else if (recordType == RecordType.Marriage)
+            {
+                family.WeddingDate = new DateTime(year, month, day);
+                family.IsWeddingDateEstimated = isThisDateEstimated;
+            }
         }
     }
 }
