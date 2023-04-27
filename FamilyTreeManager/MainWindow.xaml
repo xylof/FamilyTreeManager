@@ -7,14 +7,14 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
-        Title="MainWindow" Height="1080" Width="1920">
+        Title="Family Tree Manager" Height="1080" Width="1920">
     <Grid HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
-        <Menu Background="Gray" Foreground="Black">
+        <Menu Grid.Row="0" Background="DarkGreen" Foreground="Yellow">
             <MenuItem Header="_Plik" FontSize="17">
                 <MenuItem x:Name="newItem" Header="_Nowa symulacja" Foreground="Black" />
                 <MenuItem x:Name="openItem" Header="_Otwórz symulację" Foreground="Black" />
@@ -30,5 +30,9 @@
                 <MenuItem x:Name="analyzerOption" Header="Analizator drzew genealogicznych" Foreground="Black" />
             </MenuItem>
         </Menu>
+
+        <Grid Grid.Row="1">
+            <DataGrid Name="dataGrid" FontSize="14" FontWeight="Medium" RowBackground="LightGreen" AlternatingRowBackground="YellowGreen" CanUserAddRows="False"/>
+        </Grid>
     </Grid>
 </Window>

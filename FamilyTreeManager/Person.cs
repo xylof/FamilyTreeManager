@@ -46,10 +46,64 @@ namespace FamilyTreeManager
             Children.Add(child);
         }
 
+        public double Age
+        {
+            get
+            {
+                // Porównanie konkretnej daty do DateTime.MinValue ma podobne znaczenie, jak porównywanie zmiennej do wartości null
+                if (IsDead && BirthDate != DateTime.MinValue && DeathDate != DateTime.MinValue) // Przypadek, gdy osoba już NIE żyje i znamy jej daty urodzenia oraz śmierci
+                {
+                    //double percentOfYear = 0;
+
+                    //if (BirthDate.Month != 0 && DeathDate.Month != 0)
+                    //    percentOfYear = (DeathDate.Month - BirthDate.Month) / 12.0;
+
+                    //double age = DeathDate.Year - BirthDate.Year + percentOfYear;
+                    //return Math.Round(age, 2);
+
+                   return GetAge(() => BirthDate.Month != 0 && DeathDate.Month != 0, DeathDate.Month, DeathDate.Year);
+                }
+                if (!IsDead && BirthDate != DateTime.MinValue) // Przypadek gdy osoba jeszcze żyje i znamy jej datę urodzenia
+                {
+                    //double percentOfYear = 0;
+
+                    //if (BirthDate.Month != 0)
+                    //    percentOfYear = (DateTime.Now.Month - BirthDate.Month) / 12.0;
+
+                    //double age = DateTime.Now.Year - BirthDate.Year + percentOfYear;
+                    //return Math.Round(age, 2);
+
+                    return GetAge(() => BirthDate.Month != 0, DateTime.Now.Month, DateTime.Now.Year);
+                }
+                return -1;
+            }
+        }
+
+        private double GetAge(Func<bool> predicate, int month, int year)
+        {
+            double percentOfYear = 0;
+
+            if (predicate())
+                percentOfYear = (month - BirthDate.Month) / 12.0;
+
+            double age = year - BirthDate.Year + percentOfYear;
+            return Math.Round(age, 2);
+        }
+
+        public bool HasParents
+        {
+            get { return Father != null && Mother != null; }
+        }
+
         public override string ToString()
         {
             if (MarriedSurname != null)
-                return $"{Name} {MarriedSurname} z d. {Surname}";
+            {
+                if (Surname != null)
+                    return $"{Name} {MarriedSurname} z d. {Surname}";
+                else
+                    return $"{Name} {MarriedSurname}";
+            }
             return $"{Name} {Surname}";
         }
     }

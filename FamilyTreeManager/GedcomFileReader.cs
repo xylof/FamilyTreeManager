@@ -23,7 +23,7 @@ namespace FamilyTreeManager
         public List<Person> people = new List<Person>();
         public List<Family> families = new List<Family>();
 
-        public void ReadGedcomFile(string filePath)
+        public(List<Person> people, List<Family> families) ReadGedcomFile(string filePath)
         {
             using (StreamReader sr = new StreamReader(filePath))
             {
@@ -64,6 +64,8 @@ namespace FamilyTreeManager
 
                 ExtractFamilyInfo(oneFamilyLines);
             }
+
+            return (people, families);
         }
 
         private void ExtractPersonInfo(List<string> onePersonLines)
