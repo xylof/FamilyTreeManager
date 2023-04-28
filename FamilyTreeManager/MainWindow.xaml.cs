@@ -122,8 +122,12 @@ namespace FamilyTreeManager
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             DataGrid dataGrid = (DataGrid)dataGridContextMenu.PlacementTarget;
-            string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[1].ToString();
-            MessageBox.Show(personID);
+            string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[0].ToString();
+            Person person = people.Find(per => per.ID == personID);
+
+            SosaAncestorsList sosaAncestorsList = new SosaAncestorsList(person);
+            sosaAncestorsList.Owner = this;
+            sosaAncestorsList.Show();
         }
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)

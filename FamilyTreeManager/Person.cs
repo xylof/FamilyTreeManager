@@ -110,6 +110,16 @@ namespace FamilyTreeManager
             }
         }
 
+        public bool IsMale
+        {
+            get { return Sex == SexEnum.M; }
+        }
+
+        public Person[] GetParents
+        {
+            get { return new Person[] { Father, Mother }; }
+        }
+
         public bool HasParents
         {
             get { return Father != null && Mother != null; }
