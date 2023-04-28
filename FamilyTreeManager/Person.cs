@@ -95,7 +95,7 @@ namespace FamilyTreeManager
             get 
             {
                 if (BirthDate == DateTime.MinValue)
-                    return "--";
+                    return "";
                 return IsBirthDateEstimated ? $"Ok. {BirthDate}" : BirthDate.ToString();
             }
         }
@@ -105,7 +105,7 @@ namespace FamilyTreeManager
             get
             {
                 if (DeathDate == DateTime.MinValue)
-                    return "--";
+                    return "";
                 return IsDeathDateEstimated ? $"Ok. {DeathDate}" : DeathDate.ToString();
             }
         }
@@ -135,6 +135,17 @@ namespace FamilyTreeManager
                     return $"{Name} {MarriedSurname}";
             }
             return $"{Name} {Surname}";
+        }
+
+        public string ShowLongerPersonDescription()
+        {
+            if (GetBirthDate != "" && GetDeathDate != "")
+                return $"{ToString()}, {GetBirthDate} - {GetDeathDate}";
+            if (GetBirthDate != "" && GetDeathDate == "")
+                return $"{ToString()}, ur. {GetBirthDate}";
+            if (GetBirthDate == "" && GetDeathDate != "")
+                return $"{ToString()}, zm. {GetDeathDate}";
+            return ToString();
         }
     }
 }

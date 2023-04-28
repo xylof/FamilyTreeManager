@@ -110,8 +110,8 @@ namespace FamilyTreeManager
                 row["Płeć"] = person.Sex.ToString();
                 row["ID ojca"] = person.HasParents ? person.Father.ID.ToString() : "--";
                 row["ID matki"] = person.HasParents ? person.Mother.ID.ToString() : "--";
-                row["Data urodzenia"] = person.GetBirthDate;
-                row["Data śmierci"] = person.GetDeathDate;
+                row["Data urodzenia"] = person.GetBirthDate != "" ? person.GetBirthDate : "--";
+                row["Data śmierci"] = person.GetDeathDate != "" ? person.GetDeathDate : "--";
                 row["Osiągnięty wiek"] = person.Age != -1 ? person.Age.ToString() : "--";
                 table.Rows.Add(row);
             }

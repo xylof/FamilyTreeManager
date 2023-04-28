@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,13 +20,14 @@ namespace FamilyTreeManager
     /// </summary>
     public partial class SosaAncestorsList : Window
     {
-        internal SosaAncestorsList(Person person)
+        internal SosaAncestorsList(Person probant)
         {
             InitializeComponent();
-            var cc = BFS(person);
+            List<(int number, Person person)> ancestors = GetAncestorsInBFSOrder(probant);
+            ShowAncestors(ancestors);
         }
 
-        private List<(int number, Person person)> BFS(Person probant)
+        private List<(int number, Person person)> GetAncestorsInBFSOrder(Person probant)
         {
             Queue<(int number, Person person)> queue = new Queue<(int, Person)>();
             List<(int number, Person person)> ancestors = new List<(int, Person)>();
@@ -52,6 +54,55 @@ namespace FamilyTreeManager
                     }
             }
             return ancestors;
+        }        
+
+        private void ShowAncestors(List<(int number, Person person)> ancestors)
+        {
+            int currentGenerationNumber = 0;
+
+            foreach ((int number, Person person) tuple in ancestors)
+            {
+                double parentGeneration = Math.Floor(Math.Log2(tuple.number)) + 1;
+
+                if (parentGeneration > currentGenerationNumber)
+                {
+                    currentGenerationNumber++;
+
+                    TextBlock generationTextBlock = new TextBlock()
+                    {
+                        Text = $"Pokolenie {currentGenerationNumber}",
+                        FontWeight = FontWeights.Bold,
+                        FontSize = 16,
+                    };
+
+                    stackPanel.Children.Add(new Label());
+                    stackPanel.Children.Add(generationTextBlock);
+                }
+
+                TextBlock personTextBlock = new TextBlock()
+                {
+                    Text = $"{tuple.number}. {tuple.person.ShowLongerPersonDescription()}",
+                    FontSize = 16,
+                    DataContext = tuple.person
+                };
+
+                stackPanel.Children.Add(personTextBlock);
+            }
+        }
+
+        private void lolo_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in stackPanel.Children)
+            {
+                var t = item as TextBlock;
+
+                if(t is TextBlock)
+                {
+                    if (t.Text.Contains("some text"))
+                        t.FontWeight = FontWeights.Bold;
+                }
+
+            }
         }
     }
 }
