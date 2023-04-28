@@ -80,10 +80,24 @@ namespace FamilyTreeManager
 
             column = new DataColumn();
             column.DataType = Type.GetType("System.String");
+            column.ColumnName = "Data urodzenia";
+            column.ReadOnly = true;
+            column.Unique = false;
+            table.Columns.Add(column);
+
+            column = new DataColumn();
+            column.DataType = Type.GetType("System.String");
+            column.ColumnName = "Data śmierci";
+            column.ReadOnly = true;
+            column.Unique = false;
+            table.Columns.Add(column);
+
+            column = new DataColumn();
+            column.DataType = Type.GetType("System.String");
             column.ColumnName = "Osiągnięty wiek";
             column.ReadOnly = true;
             column.Unique = false;
-            table.Columns.Add(column);            
+            table.Columns.Add(column);
 
             DataSet dataSet = new DataSet();
             dataSet.Tables.Add(table);
@@ -96,12 +110,25 @@ namespace FamilyTreeManager
                 row["Płeć"] = person.Sex.ToString();
                 row["ID ojca"] = person.HasParents ? person.Father.ID.ToString() : "--";
                 row["ID matki"] = person.HasParents ? person.Mother.ID.ToString() : "--";
+                row["Data urodzenia"] = person.GetBirthDate;
+                row["Data śmierci"] = person.GetDeathDate;
                 row["Osiągnięty wiek"] = person.Age != -1 ? person.Age.ToString() : "--";
                 table.Rows.Add(row);
             }
 
             dataGrid.ItemsSource = dataSet.Tables["Wszystkie osoby"].DefaultView;
+        }       
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            DataGrid dataGrid = (DataGrid)dataGridContextMenu.PlacementTarget;
+            string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[1].ToString();
+            MessageBox.Show(personID);
         }
 
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("WEWEW");
+        }
     }
 }

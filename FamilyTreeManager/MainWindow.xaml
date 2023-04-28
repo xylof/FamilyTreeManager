@@ -32,7 +32,14 @@
         </Menu>
 
         <Grid Grid.Row="1">
-            <DataGrid Name="dataGrid" FontSize="14" FontWeight="Medium" RowBackground="LightGreen" AlternatingRowBackground="YellowGreen" CanUserAddRows="False"/>
+            <DataGrid Name="dataGrid" FontSize="14" FontWeight="Medium" RowBackground="LightGreen" AlternatingRowBackground="YellowGreen" CanUserAddRows="False">
+                <DataGrid.ContextMenu>
+                    <ContextMenu Name="dataGridContextMenu">
+                        <MenuItem Header="Wyświetl przodków w systemie Sosy" Click="MenuItem_Click"/>
+                        <MenuItem Header="Opcja 2" Click="MenuItem_Click_1"/>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+            </DataGrid>
         </Grid>
     </Grid>
 </Window>

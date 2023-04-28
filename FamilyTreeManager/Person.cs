@@ -90,6 +90,26 @@ namespace FamilyTreeManager
             return Math.Round(age, 2);
         }
 
+        public string GetBirthDate
+        {
+            get 
+            {
+                if (BirthDate == DateTime.MinValue)
+                    return "--";
+                return IsBirthDateEstimated ? $"Ok. {BirthDate}" : BirthDate.ToString();
+            }
+        }
+
+        public string GetDeathDate
+        {
+            get
+            {
+                if (DeathDate == DateTime.MinValue)
+                    return "--";
+                return IsDeathDateEstimated ? $"Ok. {DeathDate}" : DeathDate.ToString();
+            }
+        }
+
         public bool HasParents
         {
             get { return Father != null && Mother != null; }
