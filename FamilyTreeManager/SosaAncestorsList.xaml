@@ -11,23 +11,35 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="520"/>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="520"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Column="0" x:Name="infoTextBlock" TextWrapping="Wrap" Margin="10" Width="280" FontSize="16"/>
+        <TextBlock Grid.Column="0" x:Name="infoTextBlock" TextWrapping="Wrap" Margin="10" Width="500" FontSize="20"/>
+
         <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <StackPanel  x:Name="stackPanel" HorizontalAlignment="Center" Width="500"/>
+            <StackPanel  x:Name="stackPanel" HorizontalAlignment="Center" Width="650"/>
         </ScrollViewer>
+
+        <StackPanel Grid.Column="2" Margin="10">
+            <CheckBox x:Name="grandparentsCheckBox" Content="Kolorowanie przodków pochodzących od poszczególnych dziadków" FontSize="15" FontWeight="DemiBold" Checked="grandparentsCheckBox_Checked" Unchecked="grandparentsCheckBox_Unchecked"/>
+            <StackPanel x:Name="grandparentsDescriptionsStackPanel" Visibility="Hidden">
+                <Label Name="paterGrandfatherLabel" FontSize="14" FontWeight="DemiBold" Foreground="Blue"/>
+                <Label Name="paterGrandmotherLabel" FontSize="14" FontWeight="DemiBold" Foreground="Red"/>
+                <Label Name="materGrandfatherLabel" FontSize="14" FontWeight="DemiBold" Foreground="Green"/>
+                <Label Name="materGrandmotherLabel" FontSize="14" FontWeight="DemiBold" Foreground="Brown"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 
     <Window.Resources>
         <ContextMenu x:Key="cmTextBlock">
-            <MenuItem Header="Wyróżnij wszystkie wystąpienia" Click="MenuItem1_Click"/>
-            <MenuItem Header="Wyróżnij osoby prowadzące do probanta" Click="MenuItem2_Click"/>
+            <MenuItem Header="Wyróżnij wszystkie wystąpienia tej osoby" Click="MenuItem1_Click"/>
+            <MenuItem Header="Wyróżnij linię prowadzącą do probanta" Click="MenuItem2_Click"/>
+            <MenuItem Header="Wyróżnij wszystkie linie łączące tę osobę z probantem" Click="MenuItem3_Click"/>
             <Separator />
-            <MenuItem Header="Menu item 3" />
+            <MenuItem Header="Menu item 4"/>
         </ContextMenu>
     </Window.Resources>
 </Window>

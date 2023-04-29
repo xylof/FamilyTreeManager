@@ -125,6 +125,27 @@ namespace FamilyTreeManager
             get { return Father != null && Mother != null; }
         }
 
+        public Person[] GetGrandparents
+        {
+            get
+            {
+                Person[] grandparents = new Person[4];
+
+                if (Father != null)
+                {
+                    grandparents[0] = Father.Father;
+                    grandparents[1] = Father.Mother;
+                }
+                if (Mother != null)
+                {
+                    grandparents[2] = Mother.Father;
+                    grandparents[3] = Mother.Mother;
+                }
+
+                return grandparents;
+            }
+        }
+
         public override string ToString()
         {
             if (MarriedSurname != null)

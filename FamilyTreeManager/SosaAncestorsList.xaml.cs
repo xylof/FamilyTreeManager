@@ -20,9 +20,13 @@ namespace FamilyTreeManager
     /// </summary>
     public partial class SosaAncestorsList : Window
     {
+        Person _probant;
+
         internal SosaAncestorsList(Person probant)
         {
             InitializeComponent();
+
+            _probant = probant;
             List<(int sosaNumber, Person person)> ancestors = GetAncestorsInBFSOrder(probant);
             ShowAncestors(ancestors);
         }
@@ -71,7 +75,7 @@ namespace FamilyTreeManager
                     TextBlock generationTextBlock = new TextBlock()
                     {
                         Text = $"Pokolenie {currentGenerationNumber}",
-                        FontWeight = FontWeights.Bold,
+                        FontWeight = FontWeights.DemiBold,
                         FontSize = 16
                     };
 
@@ -107,7 +111,7 @@ namespace FamilyTreeManager
         private void MenuItem1_Click(object sender, RoutedEventArgs e)
         {
             DistinguishPeopleIndicatedByCondition(tuple => tuple.person == _clickedPersonWithSosaNumber.person);
-            infoTextBlock.Text = $"{_clickedPersonWithSosaNumber.person} występuje {_counter} razy";
+            infoTextBlock.Text = $"Liczba wystąpień osoby {_clickedPersonWithSosaNumber.person} na liście wynosi: {_counter}";
             _counter = 0;
         }
 
@@ -123,12 +127,39 @@ namespace FamilyTreeManager
             }
 
             DistinguishPeopleIndicatedByCondition(tuple => sosaNumbers.Contains(tuple.sosaNumber));
-            infoTextBlock.Text = "";
+            infoTextBlock.Text = $"Linia łącząca osobę {_clickedPersonWithSosaNumber.person} z probantem";
             _counter = 0;
         }
 
-        private void DistinguishPeopleIndicatedByCondition(Func<(int sosaNumber, Person person), bool> predicate)
+        private void MenuItem3_Click(object sender, RoutedEventArgs e)
         {
+            List<(int sosaNumber, Person person)> distinguishedPeople = DistinguishPeopleIndicatedByCondition(tuple => tuple.person == _clickedPersonWithSosaNumber.person);
+
+            List<int> sosaNumbers = new List<int>();
+            sosaNumbers.AddRange(distinguishedPeople.Select(tuple => tuple.sosaNumber));
+
+            foreach (int sosaNumber in new List<int>(sosaNumbers))
+            {
+                int sosaNumberCopy = sosaNumber;
+
+                while (sosaNumberCopy != 1)
+                {
+                    sosaNumberCopy /= 2;
+                    sosaNumbers.Add(sosaNumberCopy);
+                }
+            }
+
+            sosaNumbers = sosaNumbers.Distinct().ToList();
+
+            DistinguishPeopleIndicatedByCondition(tuple => sosaNumbers.Contains(tuple.sosaNumber));
+            infoTextBlock.Text = $"Wszystkie linie łączące osobę {_clickedPersonWithSosaNumber.person} z probantem";
+            _counter = 0;
+        }
+
+        private List<(int sosaNumber, Person person)> DistinguishPeopleIndicatedByCondition(Func<(int sosaNumber, Person person), bool> predicate)
+        {
+            List<(int sosaNumber, Person person)> distinguishedPeople = new List<(int sosaNumber, Person person)>();
+
             foreach (var stackPanelElement in stackPanel.Children)
             {
                 TextBlock textBlock = stackPanelElement as TextBlock;
@@ -144,23 +175,105 @@ namespace FamilyTreeManager
                         textBlock.Text = $"  {textBlock.Text}";
                         textBlock.FontWeight = FontWeights.Bold;
                         textBlock.FontStyle = FontStyles.Italic;
-                        textBlock.Foreground = Brushes.DarkRed;
+                        //textBlock.Foreground = Brushes.DarkRed;
 
-                        kfddl();
+                        distinguishedPeople.Add(currentPersonWithSosaNumber);
+                        _counter++;
                     }
                     else
                     {
                         textBlock.FontWeight = FontWeights.Normal;
                         textBlock.FontStyle = FontStyles.Normal;
-                        textBlock.Foreground = Brushes.Black;
+                        //textBlock.Foreground = Brushes.Black;
+                    }
+                }
+            }
+
+            return distinguishedPeople;
+        }
+
+        private void grandparentsCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ColorAncestorsFromEachGrandparent();
+            grandparentsDescriptionsStackPanel.Visibility = Visibility.Visible;
+
+            paterGrandfatherLabel.Content = $"Przodkowie dziadka ojczystego: {_probant.GetGrandparents[0]}";
+            paterGrandmotherLabel.Content = $"Przodkowie babci ojczystej: {_probant.GetGrandparents[1]}";
+            materGrandfatherLabel.Content = $"Przodkowie dziadka macierzystego: {_probant.GetGrandparents[2]}";
+            materGrandmotherLabel.Content = $"Przodkowie babci macierzystej: {_probant.GetGrandparents[3]}";
+        }
+
+        private void grandparentsCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            MakeAllPeopleBlack();
+            grandparentsDescriptionsStackPanel.Visibility = Visibility.Hidden;
+        }
+
+        private void ColorAncestorsFromEachGrandparent()
+        {
+            int generationNumber = 0;
+
+            double firstGrandfatherMinSosaNumber = 0;
+            double firstGrandfatherMaxSosaNumber = 0;
+
+            double firstGrandmotherMinSosaNumber = 0;
+            double firstGrandmotherMaxSosaNumber = 0;
+
+            double secondGrandfatherMinSosaNumber = 0;
+            double secondGrandfatherMaxSosaNumber = 0;
+
+            double secondGrandmotherMinSosaNumber = 0;
+            double secondGrandmotherMaxSosaNumber = 0;
+
+            foreach (var stackPanelElement in stackPanel.Children)
+            {
+                TextBlock textBlock = stackPanelElement as TextBlock;
+
+                if (textBlock is TextBlock)
+                {
+                    if (textBlock.DataContext == null)
+                    {
+                        string[] temp = textBlock.Text.Split();
+                        generationNumber = int.Parse(temp.Last());
+
+                        firstGrandfatherMinSosaNumber = 4 * Math.Pow(2, generationNumber - 3);
+                        firstGrandfatherMaxSosaNumber = (4 + 1) * Math.Pow(2, generationNumber - 3) - 1;
+
+                        firstGrandmotherMinSosaNumber = 5 * Math.Pow(2, generationNumber - 3);
+                        firstGrandmotherMaxSosaNumber = (5 + 1) * Math.Pow(2, generationNumber - 3) - 1;
+
+                        secondGrandfatherMinSosaNumber = 6 * Math.Pow(2, generationNumber - 3);
+                        secondGrandfatherMaxSosaNumber = (6 + 1) * Math.Pow(2, generationNumber - 3) - 1;
+
+                        secondGrandmotherMinSosaNumber = 7 * Math.Pow(2, generationNumber - 3);
+                        secondGrandmotherMaxSosaNumber = (7 + 1) * Math.Pow(2, generationNumber - 3) - 1;
+                    }
+                    else if (generationNumber >= 3)
+                    {
+                        (int sosaNumber, Person person) currentPersonWithSosaNumber = ((int sosaNumber, Person person))textBlock.DataContext;
+
+                        if (firstGrandfatherMinSosaNumber <= currentPersonWithSosaNumber.sosaNumber && currentPersonWithSosaNumber.sosaNumber <= firstGrandfatherMaxSosaNumber)
+                            textBlock.Foreground = Brushes.Blue;
+                        else if (firstGrandmotherMinSosaNumber <= currentPersonWithSosaNumber.sosaNumber && currentPersonWithSosaNumber.sosaNumber <= firstGrandmotherMaxSosaNumber)
+                            textBlock.Foreground = Brushes.Red;
+                        else if (secondGrandfatherMinSosaNumber <= currentPersonWithSosaNumber.sosaNumber && currentPersonWithSosaNumber.sosaNumber <= secondGrandfatherMaxSosaNumber)
+                            textBlock.Foreground = Brushes.Green;
+                        else if (secondGrandmotherMinSosaNumber <= currentPersonWithSosaNumber.sosaNumber && currentPersonWithSosaNumber.sosaNumber <= secondGrandmotherMaxSosaNumber)
+                            textBlock.Foreground = Brushes.Brown;
                     }
                 }
             }
         }
 
-        private void kfddl()
+        private void MakeAllPeopleBlack()
         {
-            _counter++;
-        }
+            foreach (var stackPanelElement in stackPanel.Children)
+            {
+                TextBlock textBlock = stackPanelElement as TextBlock;
+
+                if (textBlock is TextBlock)
+                    textBlock.Foreground = Brushes.Black;
+            }
+        }   
     }
 }
