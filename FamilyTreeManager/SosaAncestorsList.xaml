@@ -16,7 +16,9 @@
             <ColumnDefinition Width="520"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Column="0" x:Name="infoTextBlock" TextWrapping="Wrap" Margin="10" Width="500" FontSize="20"/>
+        <StackPanel Grid.Column="0" x:Name="infoStackPanel" Margin="10">
+            <TextBlock x:Name="infoTextBlock" TextWrapping="Wrap" Width="500" FontSize="20"/>
+        </StackPanel>
 
         <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <StackPanel  x:Name="stackPanel" HorizontalAlignment="Center" Width="650"/>

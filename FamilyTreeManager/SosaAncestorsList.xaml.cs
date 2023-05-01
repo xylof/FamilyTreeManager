@@ -21,6 +21,14 @@ namespace FamilyTreeManager
     public partial class SosaAncestorsList : Window
     {
         Person _probant;
+        private (int sosaNumber, Person person) _clickedPersonWithSosaNumber;
+        private (int sosaNumber, Person person) _lastClickedPersonWithSosaNumber;
+        private LastOptionClicked _lastOptionClicked;
+
+        private enum LastOptionClicked
+        {
+            None, Option1, Option2, Option3
+        };
 
         internal SosaAncestorsList(Person probant)
         {
@@ -58,7 +66,7 @@ namespace FamilyTreeManager
                     }
             }
             return ancestors;
-        }        
+        }
 
         private void ShowAncestors(List<(int sosaNumber, Person person)> ancestors)
         {
@@ -95,28 +103,58 @@ namespace FamilyTreeManager
             }
         }
 
-        private (int sosaNumber, Person person) _clickedPersonWithSosaNumber;
-
         private void textBlock_RightClick(object sender, RoutedEventArgs e)
-        {           
+        {
             ContextMenu contextMenu = FindResource("cmTextBlock") as ContextMenu;
             contextMenu.PlacementTarget = sender as TextBlock;
             contextMenu.IsOpen = true;
 
+            _lastClickedPersonWithSosaNumber = _clickedPersonWithSosaNumber;
             _clickedPersonWithSosaNumber = ((int sosaNumber, Person person))(sender as TextBlock).DataContext;
         }
 
-        private int _counter = 0;
-
         private void MenuItem1_Click(object sender, RoutedEventArgs e)
         {
-            DistinguishPeopleIndicatedByCondition(tuple => tuple.person == _clickedPersonWithSosaNumber.person);
-            infoTextBlock.Text = $"Liczba wystąpień osoby {_clickedPersonWithSosaNumber.person} na liście wynosi: {_counter}";
-            _counter = 0;
+            if (_lastOptionClicked == LastOptionClicked.Option1 && _lastClickedPersonWithSosaNumber == _clickedPersonWithSosaNumber)
+                return;
+
+            List<(int sosaNumber, Person person)> distinguishedPeople = DistinguishPeopleIndicatedByCondition(tuple => tuple.person == _clickedPersonWithSosaNumber.person);
+            Dictionary<double, int> generationNumbersOccurences = new Dictionary<double, int>();
+
+            foreach ((int sosaNumber, Person person) tuple in distinguishedPeople)
+            {
+                double generationNumber = Math.Floor(Math.Log2(tuple.sosaNumber)) + 1;
+
+                if (!generationNumbersOccurences.ContainsKey(generationNumber))
+                    generationNumbersOccurences[generationNumber] = 1;
+                else
+                    generationNumbersOccurences[generationNumber]++;
+            }
+
+            infoStackPanel.Children.RemoveRange(1, infoStackPanel.Children.Count - 1);
+            infoTextBlock.Text = $"Liczba wystąpień osoby {_clickedPersonWithSosaNumber.person} na liście wynosi {distinguishedPeople.Count}, w tym:";
+
+            foreach (KeyValuePair<double, int> keyValuePair in generationNumbersOccurences)
+            {
+                TextBlock textBlock = new TextBlock()
+                {
+                    Text = $"{keyValuePair.Value} raz{(keyValuePair.Value > 1 ? "y" : "")} w pokoleniu nr {keyValuePair.Key}",
+                    TextWrapping = TextWrapping.Wrap,
+                    Width = 500,
+                    FontSize = 20
+                };
+
+                infoStackPanel.Children.Add(textBlock);
+            }
+
+            _lastOptionClicked = LastOptionClicked.Option1;
         }
 
         private void MenuItem2_Click(object sender, RoutedEventArgs e)
         {
+            if (_lastOptionClicked == LastOptionClicked.Option2 && _lastClickedPersonWithSosaNumber == _clickedPersonWithSosaNumber)
+                return;
+
             int sosaNumber = _clickedPersonWithSosaNumber.sosaNumber;
             List<int> sosaNumbers = new List<int> { sosaNumber };
 
@@ -127,12 +165,18 @@ namespace FamilyTreeManager
             }
 
             DistinguishPeopleIndicatedByCondition(tuple => sosaNumbers.Contains(tuple.sosaNumber));
-            infoTextBlock.Text = $"Linia łącząca osobę {_clickedPersonWithSosaNumber.person} z probantem";
-            _counter = 0;
+
+            infoStackPanel.Children.RemoveRange(1, infoStackPanel.Children.Count - 1);
+            infoTextBlock.Text = $"Linia łącząca osobę {_clickedPersonWithSosaNumber.person} z probantem {_probant}";
+
+            _lastOptionClicked = LastOptionClicked.Option2;
         }
 
         private void MenuItem3_Click(object sender, RoutedEventArgs e)
         {
+            if (_lastOptionClicked == LastOptionClicked.Option3 && _lastClickedPersonWithSosaNumber == _clickedPersonWithSosaNumber)
+                return;
+
             List<(int sosaNumber, Person person)> distinguishedPeople = DistinguishPeopleIndicatedByCondition(tuple => tuple.person == _clickedPersonWithSosaNumber.person);
 
             List<int> sosaNumbers = new List<int>();
@@ -152,8 +196,11 @@ namespace FamilyTreeManager
             sosaNumbers = sosaNumbers.Distinct().ToList();
 
             DistinguishPeopleIndicatedByCondition(tuple => sosaNumbers.Contains(tuple.sosaNumber));
-            infoTextBlock.Text = $"Wszystkie linie łączące osobę {_clickedPersonWithSosaNumber.person} z probantem";
-            _counter = 0;
+
+            infoStackPanel.Children.RemoveRange(1, infoStackPanel.Children.Count - 1);
+            infoTextBlock.Text = $"Wszystkie linie łączące osobę {_clickedPersonWithSosaNumber.person} z probantem {_probant}";
+
+            _lastOptionClicked = LastOptionClicked.Option3;
         }
 
         private List<(int sosaNumber, Person person)> DistinguishPeopleIndicatedByCondition(Func<(int sosaNumber, Person person), bool> predicate)
@@ -167,7 +214,7 @@ namespace FamilyTreeManager
                 if (textBlock is TextBlock && textBlock.DataContext != null)
                 {
                     (int sosaNumber, Person person) currentPersonWithSosaNumber = ((int sosaNumber, Person person))textBlock.DataContext;
-                    
+
                     textBlock.Text = textBlock.Text.Trim();
 
                     if (predicate(currentPersonWithSosaNumber))
@@ -175,16 +222,13 @@ namespace FamilyTreeManager
                         textBlock.Text = $"  {textBlock.Text}";
                         textBlock.FontWeight = FontWeights.Bold;
                         textBlock.FontStyle = FontStyles.Italic;
-                        //textBlock.Foreground = Brushes.DarkRed;
 
                         distinguishedPeople.Add(currentPersonWithSosaNumber);
-                        _counter++;
                     }
                     else
                     {
                         textBlock.FontWeight = FontWeights.Normal;
                         textBlock.FontStyle = FontStyles.Normal;
-                        //textBlock.Foreground = Brushes.Black;
                     }
                 }
             }
@@ -274,6 +318,6 @@ namespace FamilyTreeManager
                 if (textBlock is TextBlock)
                     textBlock.Foreground = Brushes.Black;
             }
-        }   
+        }
     }
 }
