@@ -146,6 +146,32 @@ namespace FamilyTreeManager
             }
         }
 
+        public List<Person> GetAllAncestors()
+        {
+            Queue<Person> queue = new Queue<Person>();
+            List<Person> ancestors = new List<Person>();
+
+            queue.Enqueue(this);
+
+            while (queue.Count != 0)
+            {
+                Person person = queue.Dequeue();
+
+                foreach (Person parent in person.GetParents)
+                    if (parent != null && !ancestors.Contains(parent))
+                    {
+                        queue.Enqueue(parent);
+                        ancestors.Add(parent);
+                    }
+            }
+            return ancestors;
+        }
+
+        public bool IsThisEmptyPerson
+        {
+            get { return Name == "?" && BirthDate == DateTime.MinValue && DeathDate == DateTime.MinValue; }
+        }
+
         public override string ToString()
         {
             if (MarriedSurname != null)
