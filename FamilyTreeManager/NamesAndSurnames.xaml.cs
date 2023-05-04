@@ -1,16 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace FamilyTreeManager
 {
@@ -19,28 +11,38 @@ namespace FamilyTreeManager
     /// </summary>
     public partial class NamesAndSurnames : Window
     {
+        private List<Person> _ancestors;
+
         internal NamesAndSurnames(Person probant)
         {
             InitializeComponent();
 
             personLabel.Content = probant.ShowLongerPersonDescription();
+            _ancestors = probant.GetAllAncestors();
 
+            ExtractSurnames();
+            ExtractNames();
+        }
+
+        private void ExtractSurnames()
+        {
             Predicate<Person> surnamesPredicate = ancestor => ancestor.Surname != null;
             Func<Person, string> surnamesFunc = ancestor => ancestor.Surname;
-            SortedDictionary<string, int> sortedSurnamesWithOccurences = GetAllAncestorsNames(probant, surnamesPredicate, surnamesFunc);
+            SortedDictionary<string, int> sortedSurnamesWithOccurences = GetAllAncestorsNames(surnamesPredicate, surnamesFunc);
             DisplayNames(sortedSurnamesWithOccurences, surnamesStackPanel);
+        }
 
+        private void ExtractNames()
+        {
             Predicate<Person> namesPredicate = ancestor => ancestor.Name != "?";
-            Func<Person, string> namesFunc = ancestor => ancestor.Name;
-            SortedDictionary<string, int> sortedNamesWithOccurences = GetAllAncestorsNames(probant, namesPredicate, namesFunc);
+            Func<Person, string> namesFunc = ancestor => (bool)multinamesCheckBox.IsChecked ? ancestor.Name : ancestor.Name.Split()[0];
+            SortedDictionary<string, int> sortedNamesWithOccurences = GetAllAncestorsNames(namesPredicate, namesFunc);
             DisplayNames(sortedNamesWithOccurences, namesStackPanel);
         }
 
-        private SortedDictionary<string, int> GetAllAncestorsNames(Person probant, Predicate<Person> predicate, Func<Person, string> func)
+        private SortedDictionary<string, int> GetAllAncestorsNames(Predicate<Person> predicate, Func<Person, string> func)
         {
-            List<Person> ancestors = probant.GetAllAncestors();
-
-            IEnumerable<string> names = ancestors.FindAll(predicate).Select(func);
+            IEnumerable<string> names = _ancestors.FindAll(predicate).Select(func);
             Dictionary<string, int> namesWithOccurences = names.GroupBy(name => name).ToDictionary(group => group.Key, group => group.Count());
             SortedDictionary<string, int> sortedNamesWithOccurences = new SortedDictionary<string, int>(namesWithOccurences);
 
@@ -62,6 +64,18 @@ namespace FamilyTreeManager
 
                 parentStackPanel.Children.Add(label);
             }
+        }
+
+        private void multinamesCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            namesStackPanel.Children.Clear();
+            ExtractNames();
+        }
+
+        private void multinamesCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            namesStackPanel.Children.Clear();
+            ExtractNames();
         }
     }
 }

@@ -91,20 +91,17 @@ namespace FamilyTreeManager
                 }
                 else if (currentLine.StartsWith("2 GIVN"))
                 {
-                    temp = currentLine.Split();
-                    data = temp.Last();
+                    data = currentLine.Remove(0, 7);
                     person.Name = data;
                 }
                 else if (currentLine.StartsWith("2 SURN"))
                 {
-                    temp = currentLine.Split();
-                    data = temp.Last();
+                    data = currentLine.Remove(0, 7);
                     person.Surname = data;
                 }
                 else if (currentLine.StartsWith("2 _MARNM"))
                 {
-                    temp = currentLine.Split();
-                    data = temp.Last();
+                    data = currentLine.Remove(0, 9);
                     person.MarriedSurname = data;
                 }
                 else if (currentLine.StartsWith("1 SEX"))
@@ -161,7 +158,7 @@ namespace FamilyTreeManager
                 else if (currentLine.StartsWith("1 EVEN NAT"))
                 {
                     data = currentLine.Remove(0, 11);
-                    string[] delimiters = { " ", ", " };
+                    string[] delimiters = { " ", "; " };
                     temp = data.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
                     person.FillNationalities(temp);
                 }
@@ -206,20 +203,17 @@ namespace FamilyTreeManager
                 }
                 else if (currentLine.StartsWith("1 HUSB"))
                 {
-                    temp = currentLine.Split();
-                    data = temp.Last();
+                    data = currentLine.Remove(0, 7);
                     family.Husband = people.Find(p => p.ID == data);
                 }
                 else if (currentLine.StartsWith("1 WIFE"))
                 {
-                    temp = currentLine.Split();
-                    data = temp.Last();
+                    data = currentLine.Remove(0, 7);
                     family.Wife = people.Find(p => p.ID == data);
                 }
                 else if (currentLine.StartsWith("1 CHIL"))
                 {
-                    temp = currentLine.Split();
-                    data = temp.Last();
+                    data = currentLine.Remove(0, 7);
                     family.AddChild(people.Find(p => p.ID == data));
                 }
                 else if (currentLine.StartsWith("1 MARR"))
