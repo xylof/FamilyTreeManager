@@ -35,8 +35,9 @@
             <DataGrid Name="dataGrid" FontSize="14" FontWeight="Medium" RowBackground="LightGreen" AlternatingRowBackground="YellowGreen" CanUserAddRows="False">
                 <DataGrid.ContextMenu>
                     <ContextMenu Name="dataGridContextMenu">
-                        <MenuItem Header="Wyświetl przodków w systemie Sosy" Click="MenuItem1_Click"/>
-                        <MenuItem Header="Wyświetl imiona i nazwiska przodków" Click="MenuItem2_Click"/>
+                        <MenuItem Header="Pokaż szczegóły" Click="MenuItem1_Click"/>
+                        <MenuItem Header="Wyświetl przodków w systemie Sosy" Click="MenuItem2_Click"/>
+                        <MenuItem Header="Wyświetl imiona i nazwiska przodków" Click="MenuItem3_Click"/>
                     </ContextMenu>
                 </DataGrid.ContextMenu>
             </DataGrid>

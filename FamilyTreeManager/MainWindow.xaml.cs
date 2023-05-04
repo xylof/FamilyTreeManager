@@ -117,9 +117,20 @@ namespace FamilyTreeManager
             }
 
             dataGrid.ItemsSource = dataSet.Tables["Wszystkie osoby"].DefaultView;
-        }       
+        }
 
         private void MenuItem1_Click(object sender, RoutedEventArgs e)
+        {
+            DataGrid dataGrid = (DataGrid)dataGridContextMenu.PlacementTarget;
+            string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[0].ToString();
+            Person person = people.Find(per => per.ID == personID);
+
+            PersonInfo personInfo = new PersonInfo(person);
+            personInfo.Owner = this;
+            personInfo.Show();
+        }
+
+        private void MenuItem2_Click(object sender, RoutedEventArgs e)
         {
             DataGrid dataGrid = (DataGrid)dataGridContextMenu.PlacementTarget;
             string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[0].ToString();
@@ -130,7 +141,7 @@ namespace FamilyTreeManager
             sosaAncestorsList.Show();
         }
 
-        private void MenuItem2_Click(object sender, RoutedEventArgs e)
+        private void MenuItem3_Click(object sender, RoutedEventArgs e)
         {
             DataGrid dataGrid = (DataGrid)dataGridContextMenu.PlacementTarget;
             string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[0].ToString();
