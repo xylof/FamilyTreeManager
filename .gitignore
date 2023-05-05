@@ -3,6 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+Pakiety zainstalowane wraz z LiveCharts 2.txt
+
 # User-specific files
 *.rsuser
 *.suo

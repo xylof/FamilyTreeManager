@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 
 namespace FamilyTreeManager
 {
@@ -24,6 +26,31 @@ namespace FamilyTreeManager
             InitializeComponent();
 
             personLabel.Content = person.ShowLongerPersonDescription();
+
+            ShowPieChartWithNationalities(person);
+        }
+
+        public IEnumerable<ISeries> Series { get; set; }
+
+        private void ShowPieChartWithNationalities(Person person)
+        {
+            if (person.Nationalities.Count == 0)
+                return;
+
+            List<ISeries> series = new List<ISeries>();
+
+            foreach (KeyValuePair<string, double> keyValuePair in person.Nationalities)
+            {
+                PieSeries<double> pieSeries = new PieSeries<double>
+                {
+                    Values = new double[] { keyValuePair.Value },
+                    Name = keyValuePair.Key,
+                };
+
+                series.Add(pieSeries);
+            }
+
+            nationalitiesPieChart.Series = series;
         }
     }
 }
