@@ -31,6 +31,12 @@ namespace FamilyTreeManager
 
         public void CompleteFamilyConnections()
         {
+            if (Husband != null && Wife != null)
+            {
+                Husband.AddPartner(Wife);
+                Wife.AddPartner(Husband);
+            }
+
             foreach (Person child in Children)
             {
                 if (Husband != null)

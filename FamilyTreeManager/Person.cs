@@ -27,11 +27,13 @@ namespace FamilyTreeManager
         public Dictionary<string, double> Nationalities { get; set; }
         public Person Father { get; set; }
         public Person Mother { get; set; }
+        public List<Person> Partners { get; set; }
         public List<Person> Children { get; set; }
 
         public Person()
         {
             Nationalities = new Dictionary<string, double>();
+            Partners = new List<Person>();
             Children = new List<Person>();
         }
 
@@ -39,6 +41,11 @@ namespace FamilyTreeManager
         {
             for (int i = 0; i < nationsAndNumbers.Length; i += 2)
                 Nationalities.Add(nationsAndNumbers[i], double.Parse(nationsAndNumbers[i + 1]));
+        }
+
+        public void AddPartner(Person partner)
+        {
+            Partners.Add(partner);
         }
 
         public void AddChild(Person child)
@@ -115,6 +122,21 @@ namespace FamilyTreeManager
             get { return Sex == SexEnum.M; }
         }
 
+        public List<Person> GetSiblings
+        {
+            get
+            {
+                List<Person> siblings = new List<Person>();
+
+                if (HasParents)
+                {
+                    siblings = Father.Children.Concat(Mother.Children).Distinct().ToList();
+                    siblings.Remove(this);
+                }
+                return siblings;
+            }
+        }
+
         public Person[] GetParents
         {
             get { return new Person[] { Father, Mother }; }
@@ -165,6 +187,41 @@ namespace FamilyTreeManager
                     }
             }
             return ancestors;
+        }
+
+        public List<Person> GetAllDescendants()
+        {
+            Queue<Person> queue = new Queue<Person>();
+            List<Person> descendants = new List<Person>();
+
+            queue.Enqueue(this);
+
+            while (queue.Count != 0)
+            {
+                Person person = queue.Dequeue();
+
+                foreach (Person child in person.Children)
+                    if (!descendants.Contains(child))
+                    {
+                        queue.Enqueue(child);
+                        descendants.Add(child);
+                    }
+            }
+            return descendants;
+        }
+
+        public Person GetMostDistantAncestorInMaleLine()
+        {
+            if (Father != null)
+                return Father.GetMostDistantAncestorInMaleLine();
+            return this;
+        }
+
+        public Person GetMostDistantAncestorInFemaleLine()
+        {
+            if (Mother != null)
+                return Mother.GetMostDistantAncestorInFemaleLine();
+            return this;
         }
 
         public bool IsThisEmptyPerson

@@ -18,7 +18,7 @@
         <Grid Grid.Row="0" Grid.ColumnSpan="3" Background="#FFE6DA64">
             <Label HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="personLabel" FontSize="20"/>
         </Grid>
-        
+
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -38,57 +38,52 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
 
-                <Image Grid.Row="0" Width="250" Height="250"/>
+                <Image Grid.Row="0" Name="portraitImage" Width="300" Height="300"/>
                 <StackPanel Grid.Row="1">
                     <Label Name="ancestorsLabely" Content="Data urodzenia" Height="30" Width="135" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
-                    <Label Name="ancestorsLabelx" Content="Miejsce urodzenia" Height="30" Width="135"  HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <Label Name="ancestorsLabelx" Content="Miejsce urodzenia" Height="30" Width="135" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Grid.Row="2">
                     <Label Name="ancestorsLabelyy" Content="Data śmierci" Height="30" Width="135" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
-                    <Label Name="ancestorsLabelxx" Content="Miejsce śmierci" Height="30" Width="135"  HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <Label Name="ancestorsLabelxx" Content="Miejsce śmierci" Height="30" Width="135" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Grid.Row="3">
-                    <Button Name="ancestorsButton" Content="Pokaż liczbę przodków" Height="30" Width="135" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Medium" Background="#FFB4CB21" BorderBrush="#FF30AE30"/>
+                    <Button Name="ancestorsButton" Content="Pokaż liczbę przodków" Height="30" Width="135" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Medium" Background="#FFB4CB21" BorderBrush="#FF30AE30" Click="ancestorsButton_Click"/>
                     <Label Name="ancestorsLabel" Height="30" Width="135" Margin="3" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" BorderThickness="2" BorderBrush="Black" Background="#FFCDDEAF"/>
                 </StackPanel>
                 <StackPanel Grid.Row="4">
-                    <Button Name="descendantsButton" Content="Pokaż liczbę potomków" Height="30" Width="135" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Medium" Background="#FFB4CB21" BorderBrush="#FF30AE30"/>
+                    <Button Name="descendantsButton" Content="Pokaż liczbę potomków" Height="30" Width="135" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Medium" Background="#FFB4CB21" BorderBrush="#FF30AE30" Click="descendantsButton_Click"/>
                     <Label Name="descendantsLabel" Height="30" Width="135" Margin="3" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" BorderThickness="2" BorderBrush="Black" Background="#FFCDDEAF"/>
                 </StackPanel>
                 <StackPanel Grid.Row="5">
-                    <Label Name="ancestorsLabelyz" Content="Najdalszy przodek po mieczu" Height="30" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
-                    <Label Name="ancestorsLabelxz" Content="--------" Height="30" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <Label Name="mostDistantMaleAncestorTitle" Content="Najdalszy przodek po mieczu:" Height="30" FontSize="16" FontWeight="DemiBold" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <Label Name="mostDistantMaleAncestor" Foreground="DarkRed" Height="35" FontSize="16" FontWeight="DemiBold" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Grid.Row="6">
-                    <Label Name="ancestorsLabelyzv" Content="Najdalsza przodkini po kądzieli" Height="30" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
-                    <Label Name="ancestorsLabelxzv" Content="--------" Height="30" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <Label Name="mostDistantFemaleAncestorTitle" Content="Najdalsza przodkini po kądzieli:" Height="30" FontSize="16" FontWeight="DemiBold" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <Label Name="mostDistantFemaleAncestor" Foreground="DarkRed" Height="35" FontSize="16" FontWeight="DemiBold" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
                 </StackPanel>
             </Grid>
 
             <TreeView Grid.Column="1" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" Width="400" Height="1000" BorderThickness="0" Padding="0,5">
-                <TreeViewItem Name="familyTreeView" Header="Najbliższa rodzina" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True">
-                    <TreeViewItem Name="grandparentsTreeView" Header="Dziadkowie" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
-                    <TreeViewItem Name="parentsTreeView" Header="Rodzice" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
-                    <TreeViewItem Name="siblingsTreeView" Header="Rodzeństwo" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
-                    <TreeViewItem Name="partnersTreeView" Header="Partnerzy" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
-                    <TreeViewItem Name="descendantsTreeView" Header="Dzieci i wnuki" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
+                <TreeViewItem Name="familyTreeView" Header="Najbliższa rodzina" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed">
+                    <TreeViewItem Name="grandparentsTreeView" Header="Dziadkowie" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
+                    <TreeViewItem Name="parentsTreeView" Header="Rodzice" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
+                    <TreeViewItem Name="siblingsTreeView" Header="Rodzeństwo" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
+                    <TreeViewItem Name="partnersTreeView" Header="Partnerzy" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
+                    <TreeViewItem Name="descendantsTreeView" Header="Dzieci i wnuki" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
                 </TreeViewItem>
             </TreeView>
-            
+
             <Grid Grid.Column="2">
-                <!--<Grid.RowDefinitions>
-                    <RowDefinition Height="300"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="300"/>
-                </Grid.ColumnDefinitions>-->
 
-                <lvc:PieChart Name="nationalitiesPieChart" Width="500" Height="500"/>
+                <lvc:PieChart Grid.Row="1" Name="nationalitiesPieChart" Width="600" Height="600" LegendPosition="Right"/>
 
             </Grid>
-          
         </Grid>
     </Grid>
 </Window>
