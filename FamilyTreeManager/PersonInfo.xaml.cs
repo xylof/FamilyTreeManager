@@ -43,7 +43,8 @@ namespace FamilyTreeManager
             DisplayMostDistantAncestorInMaleLine();
             DisplayMostDistantAncestorInFemaleLine();
 
-            ShowPieChartWithNationalities(probant);
+            ShowPieChartWithNationalities();
+            ShowPieChartWithDescendantsSex();
         }
 
         //public IEnumerable<ISeries> Series { get; set; }
@@ -128,23 +129,23 @@ namespace FamilyTreeManager
                 treeViewItem.FontWeight = FontWeights.Normal;
         }
 
-        private void ShowPieChartWithNationalities(Person person)
+        private void ShowPieChartWithNationalities()
         {
-            if (person.Nationalities.Count == 0)
+            if (_probant.Nationalities.Count == 0)
                 return;
 
             List<ISeries> series = new List<ISeries>();
 
-            foreach (KeyValuePair<string, double> keyValuePair in person.Nationalities)
+            foreach (KeyValuePair<string, double> keyValuePair in _probant.Nationalities)
             {
                 PieSeries<double> pieSeries = new PieSeries<double>
                 {
                     Values = new double[] { keyValuePair.Value },
-                    Name = $"{keyValuePair.Key} {(keyValuePair.Value >= 1 ? keyValuePair.Value : keyValuePair.Value.ToString("N2"))}%",
+                    Name = $"{keyValuePair.Key} {GetChartLabelInAppropriateFormat(keyValuePair.Value)}",
                     DataLabelsSize = 19,
                     DataLabelsPaint = new SolidColorPaint(SKColors.Black),
                     DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle,
-                    DataLabelsFormatter = point => $"{keyValuePair.Key}{Environment.NewLine} {point.PrimaryValue:N2}%"
+                    DataLabelsFormatter = point => $"{keyValuePair.Key}{Environment.NewLine}{GetChartLabelInAppropriateFormat(point.PrimaryValue)}"
                 };
 
                 series.Add(pieSeries);
@@ -155,6 +156,49 @@ namespace FamilyTreeManager
             nationalitiesPieChart.Title = new LabelVisual
             {
                 Text = "Narodowości",
+                TextSize = 28,
+                Paint = new SolidColorPaint(SKColors.Black)
+            };
+        }
+
+        private string GetChartLabelInAppropriateFormat(double chartPointValue)
+        {
+            return $"{(chartPointValue >= 1 ? chartPointValue : chartPointValue.ToString("N2"))}%";
+        }
+
+        private void ShowPieChartWithDescendantsSex()
+        {
+            if (_probant.Children.Count == 0)
+                return;
+
+            List<Person> descendants = _probant.GetAllDescendants();
+            List<ISeries> series = new List<ISeries>();
+
+            PieSeries<double> pieSeries = new PieSeries<double>
+            {
+                Values = new double[] { descendants.FindAll(per => per.IsMale).Count },
+                Name = "Mężczyźni",
+                DataLabelsSize = 19,
+                DataLabelsPaint = new SolidColorPaint(SKColors.Black)
+            };
+
+            series.Add(pieSeries);
+
+            pieSeries = new PieSeries<double>
+            {
+                Values = new double[] { descendants.FindAll(per => !per.IsMale).Count },
+                Name = "Kobiety",
+                DataLabelsSize = 19,
+                DataLabelsPaint = new SolidColorPaint(SKColors.Black)
+            };
+
+            series.Add(pieSeries);
+
+            descendantsSexPieChart.Series = series;
+
+            descendantsSexPieChart.Title = new LabelVisual
+            {
+                Text = "Potomkowie według płci",
                 TextSize = 28,
                 Paint = new SolidColorPaint(SKColors.Black)
             };

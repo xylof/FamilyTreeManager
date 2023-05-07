@@ -77,11 +77,12 @@
 
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="100"/>
                     <RowDefinition Height="1*"/>
+                    <RowDefinition Height="200"/>
                 </Grid.RowDefinitions>
 
-                <lvc:PieChart Grid.Row="1" Name="nationalitiesPieChart" Width="600" Height="600" LegendPosition="Right"/>
+                <lvc:PieChart Grid.Row="0" Name="nationalitiesPieChart" Width="600" Height="600" LegendPosition="Right" Visibility="Hidden"/>
+                <lvc:PieChart Grid.Row="0" Name="descendantsSexPieChart" Width="600" Height="600" LegendPosition="Right" Visibility="Visible"/>
 
             </Grid>
         </Grid>
