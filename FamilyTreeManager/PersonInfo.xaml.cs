@@ -45,6 +45,8 @@ namespace FamilyTreeManager
 
             ShowPieChartWithNationalities();
             ShowPieChartWithDescendantsSex();
+
+            SetRadioButtonsVisibility();
         }
 
         //public IEnumerable<ISeries> Series { get; set; }
@@ -224,6 +226,14 @@ namespace FamilyTreeManager
                 mostDistantFemaleAncestorTitle.Visibility = Visibility.Hidden;
         }
 
+        private void SetRadioButtonsVisibility()
+        {
+            if (_probant.Nationalities.Count == 0)
+                nationalitiesRadioButton.Visibility = Visibility.Hidden;
+            if (_probant.Children.Count == 0)
+                descendantsRadioButton.Visibility = Visibility.Hidden;
+        }
+
         private void ancestorsButton_Click(object sender, RoutedEventArgs e)
         {
             ((Button)sender).IsEnabled = false;
@@ -238,6 +248,18 @@ namespace FamilyTreeManager
 
             List<Person> descendants = _probant.GetAllDescendants();
             descendantsLabel.Content = descendants.Count;
+        }
+
+        private void descendantsRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            descendantsSexPieChart.Visibility = Visibility.Visible;
+            nationalitiesPieChart.Visibility = Visibility.Hidden;
+        }
+
+        private void nationalitiesRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            descendantsSexPieChart.Visibility = Visibility.Hidden;
+            nationalitiesPieChart.Visibility = Visibility.Visible;
         }
     }
 }

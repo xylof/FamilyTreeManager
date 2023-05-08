@@ -142,6 +142,7 @@ namespace FamilyTreeManager
             get { return new Person[] { Father, Mother }; }
         }
 
+        // TODO Trzeba raczej sprawdzać, czy probant ma przynajmniej jednego rodzica w drzewie, a jeśli tak, to jakiego
         public bool HasParents
         {
             get { return Father != null && Mother != null; }
@@ -151,20 +152,146 @@ namespace FamilyTreeManager
         {
             get
             {
+                Person[] parents = GetParents;
                 Person[] grandparents = new Person[4];
 
-                if (Father != null)
+                for (int i = 0; i < parents.Length; i++)
                 {
-                    grandparents[0] = Father.Father;
-                    grandparents[1] = Father.Mother;
-                }
-                if (Mother != null)
-                {
-                    grandparents[2] = Mother.Father;
-                    grandparents[3] = Mother.Mother;
+                    if (parents[i] != null)
+                    {
+                        grandparents[i * 2] = parents[i].Father;
+                        grandparents[i * 2 + 1] = parents[i].Mother;
+                    }
                 }
 
                 return grandparents;
+            }
+        }
+
+        public Person[] GetGreatGrandparents
+        {           
+            get
+            {
+                Person[] grandparents = GetGrandparents;
+                Person[] greatGrandparents = new Person[8];
+
+                for (int i = 0; i < grandparents.Length; i++)
+                {
+                    if (grandparents[i] != null)
+                    {
+                        greatGrandparents[i * 2] = grandparents[i].Father;
+                        greatGrandparents[i * 2 + 1] = grandparents[i].Mother;
+                    }
+                }
+
+                return greatGrandparents.Distinct().ToArray();
+            }
+        }
+
+        public List<Person> GetGrandchildren
+        {
+            get
+            {
+                List<Person> grandchildren = new List<Person>();
+
+                foreach (Person child in Children)
+                    grandchildren.AddRange(child.Children);
+
+                return grandchildren.Distinct().ToList();
+            }
+        }
+
+        public List<Person> GetGreatGrandchildren
+        {
+            get
+            {
+                List<Person> greatGrandchildren = new List<Person>();
+
+                foreach (Person grandchild in GetGrandchildren)
+                    greatGrandchildren.AddRange(grandchild.Children);
+
+                return greatGrandchildren.Distinct().ToList();
+            }
+        }
+
+        public List<Person> GetAuntsAndUncles
+        {
+            get
+            {
+                List<Person> auntsAndUncles = new List<Person>();
+
+                foreach (Person parent in GetParents)
+                    if (parent != null)
+                        auntsAndUncles.AddRange(parent.GetSiblings);
+
+                return auntsAndUncles;
+            }
+        }
+
+        public List<Person> GetFirstCousins
+        {
+            get
+            {
+                List<Person> firstCousins = new List<Person>();
+
+                foreach (Person auntOrUncle in GetAuntsAndUncles)
+                    firstCousins.AddRange(auntOrUncle.Children);
+
+                return firstCousins.Distinct().ToList();
+            }
+        }
+
+        public List<Person> GetNephewsAndNieces
+        {
+            get
+            {
+                List<Person> nephewsAndNieces = new List<Person>();
+
+                foreach (Person sibling in GetSiblings)
+                    nephewsAndNieces.AddRange(sibling.Children);
+
+                return nephewsAndNieces.Distinct().ToList();
+            }
+        }
+
+        public List<Person> GetGreatAuntsAndUncles
+        {
+            get
+            {
+                List<Person> greatAuntsAndUncles = new List<Person>();
+
+                foreach (Person grandparent in GetGrandparents)
+                    if (grandparent != null)
+                        greatAuntsAndUncles.AddRange(grandparent.GetSiblings);
+
+                return greatAuntsAndUncles.Distinct().ToList();
+            }
+        }
+
+        public List<Person> GetParentsFirstCousins
+        {
+            get
+            {
+                List<Person> parentsFirstCousins = new List<Person>();
+
+                foreach (Person parent in GetParents)
+                    if (parent != null)
+                        parentsFirstCousins.AddRange(parent.GetFirstCousins);
+
+                return parentsFirstCousins;
+            }
+        }
+
+        public List<Person> GetSecondCousins
+        {
+            get
+            {
+                List<Person> secondCousins = new List<Person>();
+
+                foreach (Person parentFirstCousin in GetParentsFirstCousins)
+                    secondCousins.AddRange(parentFirstCousin.Children);
+
+                return secondCousins.Distinct().ToList();
             }
         }
 

@@ -81,9 +81,14 @@
                     <RowDefinition Height="200"/>
                 </Grid.RowDefinitions>
 
-                <lvc:PieChart Grid.Row="0" Name="nationalitiesPieChart" Width="600" Height="600" LegendPosition="Right" Visibility="Hidden"/>
-                <lvc:PieChart Grid.Row="0" Name="descendantsSexPieChart" Width="600" Height="600" LegendPosition="Right" Visibility="Visible"/>
+                <lvc:PieChart Grid.Row="0" Name="descendantsSexPieChart" Width="700" Height="600" LegendPosition="Right" Visibility="Visible"/>
+                <lvc:PieChart Grid.Row="0" Name="nationalitiesPieChart" Width="700" Height="600" LegendPosition="Right" Visibility="Hidden"/>
 
+                <StackPanel Grid.Row="1" Width="600">
+                    <RadioButton x:Name="descendantsRadioButton" Content="Płeć potomków" FontSize="16" FontWeight="Medium" Margin="5" IsChecked="True" Checked="descendantsRadioButton_Checked"/>
+                    <RadioButton x:Name="nationalitiesRadioButton" Content="Narodowości" FontSize="16" FontWeight="Medium" Margin="5" IsChecked="False" Checked="nationalitiesRadioButton_Checked"/>
+                </StackPanel>
+                
             </Grid>
         </Grid>
     </Grid>
