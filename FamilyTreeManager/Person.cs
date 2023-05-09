@@ -29,6 +29,7 @@ namespace FamilyTreeManager
         public Person Mother { get; set; }
         public List<Person> Partners { get; set; }
         public List<Person> Children { get; set; }
+        public int RelativesDensityFactor { get; private set; }
 
         public Person()
         {
@@ -148,6 +149,9 @@ namespace FamilyTreeManager
             get { return Father != null && Mother != null; }
         }
 
+        /// <summary>
+        /// Dziadkowie
+        /// </summary>
         public Person[] GetGrandparents
         {
             get
@@ -168,6 +172,9 @@ namespace FamilyTreeManager
             }
         }
 
+        /// <summary>
+        /// Pradziadkowie
+        /// </summary>
         public Person[] GetGreatGrandparents
         {           
             get
@@ -188,6 +195,9 @@ namespace FamilyTreeManager
             }
         }
 
+        /// <summary>
+        /// Wnuki
+        /// </summary>
         public List<Person> GetGrandchildren
         {
             get
@@ -201,6 +211,9 @@ namespace FamilyTreeManager
             }
         }
 
+        /// <summary>
+        /// Prawnuki
+        /// </summary>
         public List<Person> GetGreatGrandchildren
         {
             get
@@ -214,6 +227,41 @@ namespace FamilyTreeManager
             }
         }
 
+        /// <summary>
+        /// Siostrzeńcy/bratankowie i siostrzenice/bratanice
+        /// </summary>
+        public List<Person> GetNephewsAndNieces
+        {
+            get
+            {
+                List<Person> nephewsAndNieces = new List<Person>();
+
+                foreach (Person sibling in GetSiblings)
+                    nephewsAndNieces.AddRange(sibling.Children);
+
+                return nephewsAndNieces.Distinct().ToList();
+            }
+        }
+
+        /// <summary>
+        /// Wnuki wujeczne i cioteczne (dzieci bratanków/siostrzeńców)
+        /// </summary>
+        public List<Person> GetGreatNephewsAndNieces
+        {
+            get
+            {
+                List<Person> greatNephewsAndNieces = new List<Person>();
+
+                foreach (Person nephewOrNiece in GetNephewsAndNieces)
+                    greatNephewsAndNieces.AddRange(nephewOrNiece.Children);
+
+                return greatNephewsAndNieces.Distinct().ToList();
+            }
+        }
+
+        /// <summary>
+        /// Ciocie i wujkowie (rodzeństwo rodziców)
+        /// </summary>
         public List<Person> GetAuntsAndUncles
         {
             get
@@ -228,6 +276,9 @@ namespace FamilyTreeManager
             }
         }
 
+        /// <summary>
+        /// Pierwsi kuzyni (dzieci cioć i wujków)
+        /// </summary>
         public List<Person> GetFirstCousins
         {
             get
@@ -241,19 +292,25 @@ namespace FamilyTreeManager
             }
         }
 
-        public List<Person> GetNephewsAndNieces
+        /// <summary>
+        /// Dzieci pierwszych kuzynów
+        /// </summary>
+        public List<Person> GetFirstCousinsChildren
         {
             get
             {
-                List<Person> nephewsAndNieces = new List<Person>();
+                List<Person> firstCousinsChildren = new List<Person>();
 
-                foreach (Person sibling in GetSiblings)
-                    nephewsAndNieces.AddRange(sibling.Children);
+                foreach (Person firtstCousin in GetFirstCousins)
+                    firstCousinsChildren.AddRange(firtstCousin.Children);
 
-                return nephewsAndNieces.Distinct().ToList();
+                return firstCousinsChildren.Distinct().ToList();
             }
         }
 
+        /// <summary>
+        /// Dzadkowie wujeczni i cioteczni (rodzeństwo dziadków)
+        /// </summary>
         public List<Person> GetGreatAuntsAndUncles
         {
             get
@@ -268,6 +325,9 @@ namespace FamilyTreeManager
             }
         }
 
+        /// <summary>
+        /// Pierwsi kuzyni rodziców (dzieci wujecznych i ciotecznych dziadków)
+        /// </summary>
         public List<Person> GetParentsFirstCousins
         {
             get
@@ -278,10 +338,13 @@ namespace FamilyTreeManager
                     if (parent != null)
                         parentsFirstCousins.AddRange(parent.GetFirstCousins);
 
-                return parentsFirstCousins;
+                return parentsFirstCousins.Distinct().ToList();
             }
         }
 
+        /// <summary>
+        /// Drudzy kuzyni (dzieci pierwszych kuzynów rodziców)
+        /// </summary>
         public List<Person> GetSecondCousins
         {
             get
@@ -293,6 +356,33 @@ namespace FamilyTreeManager
 
                 return secondCousins.Distinct().ToList();
             }
+        }
+
+        public void CalculateRelativesDensityFactor()
+        {
+            int a = GetParents.ToList().FindAll(per => per != null).Count * 100;
+            int b = GetGrandparents.ToList().FindAll(per => per != null).Count * 80;
+            int c = GetGreatGrandparents.ToList().FindAll(per => per != null).Count * 60;
+
+            int d = Children.Count * 100;
+            int e = GetGrandchildren.Count * 80;
+            int f = GetGreatGrandchildren.Count * 60;
+
+            int g = Partners.Count * 80;
+
+            int h = GetSiblings.Count * 100;
+            int i = GetNephewsAndNieces.Count * 80;
+            int j = GetGreatNephewsAndNieces.Count * 60;
+
+            int k = GetAuntsAndUncles.Count * 80;
+            int l = GetFirstCousins.Count * 60;
+            int m = GetFirstCousinsChildren.Count * 40;
+
+            int n = GetGreatAuntsAndUncles.Count * 60;
+            int o = GetParentsFirstCousins.Count * 40;
+            int p = GetSecondCousins.Count * 20;
+
+            RelativesDensityFactor = a + b + c + d + e + f + g + h + i + j + k + l + m + n + o + p;
         }
 
         public List<Person> GetAllAncestors()

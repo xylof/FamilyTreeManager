@@ -21,8 +21,8 @@ namespace FamilyTreeManager
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<Person> people;
-        private List<Family> families;
+        private List<Person> _people;
+        private List<Family> _families;
 
         public MainWindow()
         {
@@ -31,10 +31,17 @@ namespace FamilyTreeManager
             GedcomFileReader gedcomFileReader = new GedcomFileReader();
             var peopleAndFamilies = gedcomFileReader.ReadGedcomFile(@"C:\Users\Marek\Downloads\m0kd51_64943600221ywr561r4h45_A.ged");
 
-            people = peopleAndFamilies.people;
-            families = peopleAndFamilies.families;
+            _people = peopleAndFamilies.people;
+            _families = peopleAndFamilies.families;
 
-            CreateTable(people);
+            CalculateRelativesDensityFactorForAllPeople();
+            CreateTable(_people);
+        }
+
+        private void CalculateRelativesDensityFactorForAllPeople()
+        {
+            foreach (Person person in _people)
+                person.CalculateRelativesDensityFactor();
         }
 
         private void CreateTable(List<Person> people)
@@ -99,6 +106,13 @@ namespace FamilyTreeManager
             column.Unique = false;
             table.Columns.Add(column);
 
+            column = new DataColumn();
+            column.DataType = Type.GetType("System.Int32");
+            column.ColumnName = "Współczynnik zagęszczenia krewnych";
+            column.ReadOnly = true;
+            column.Unique = false;
+            table.Columns.Add(column);
+
             DataSet dataSet = new DataSet();
             dataSet.Tables.Add(table);
 
@@ -113,6 +127,7 @@ namespace FamilyTreeManager
                 row["Data urodzenia"] = person.GetBirthDate != "" ? person.GetBirthDate : "--";
                 row["Data śmierci"] = person.GetDeathDate != "" ? person.GetDeathDate : "--";
                 row["Osiągnięty wiek"] = person.Age != -1 ? person.Age.ToString() : "--";
+                row["Współczynnik zagęszczenia krewnych"] = person.RelativesDensityFactor;
                 table.Rows.Add(row);
             }
 
@@ -123,7 +138,7 @@ namespace FamilyTreeManager
         {
             DataGrid dataGrid = (DataGrid)dataGridContextMenu.PlacementTarget;
             string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[0].ToString();
-            Person person = people.Find(per => per.ID == personID);
+            Person person = _people.Find(per => per.ID == personID);
 
             PersonInfo personInfo = new PersonInfo(person);
             personInfo.Owner = this;
@@ -134,7 +149,7 @@ namespace FamilyTreeManager
         {
             DataGrid dataGrid = (DataGrid)dataGridContextMenu.PlacementTarget;
             string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[0].ToString();
-            Person person = people.Find(per => per.ID == personID);
+            Person person = _people.Find(per => per.ID == personID);
 
             SosaAncestorsList sosaAncestorsList = new SosaAncestorsList(person);
             sosaAncestorsList.Owner = this;
@@ -145,7 +160,7 @@ namespace FamilyTreeManager
         {
             DataGrid dataGrid = (DataGrid)dataGridContextMenu.PlacementTarget;
             string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[0].ToString();
-            Person person = people.Find(per => per.ID == personID);
+            Person person = _people.Find(per => per.ID == personID);
 
             NamesAndSurnames namesAndSurnames = new NamesAndSurnames(person);
             namesAndSurnames.Owner = this;
