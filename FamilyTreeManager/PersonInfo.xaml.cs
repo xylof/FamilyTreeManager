@@ -27,6 +27,7 @@ namespace FamilyTreeManager
     public partial class PersonInfo : Window
     {
         private Person _probant;
+        private bool _wasGrandchildClicked;
         private string _imagesDirectory = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).ToString()).ToString()).ToString() + "\\Images";
 
         internal PersonInfo(Person probant)
@@ -34,7 +35,14 @@ namespace FamilyTreeManager
             InitializeComponent();
 
             _probant = probant;
-            personLabel.Content = probant.ShowLongerPersonDescription();
+            SetWindowControls();
+        }
+
+        //public IEnumerable<ISeries> Series { get; set; }
+
+        private void SetWindowControls()
+        {
+            personLabel.Content = _probant.ShowLongerPersonDescription();
 
             PopulateTreeViews();
 
@@ -49,12 +57,11 @@ namespace FamilyTreeManager
             SetRadioButtonsVisibility();
         }
 
-        //public IEnumerable<ISeries> Series { get; set; }
-
         private void DisplayPortraitImageOrPlaceholder()
         {
             DirectoryInfo directoryInfo = new DirectoryInfo("D:/Marek/Marek/Pliki Graficzne/Gry/The Sims 3/Simowie");
-            FileInfo[] files = directoryInfo.GetFiles($"{_probant.Name}*");
+            FileInfo[] files = directoryInfo.GetFiles($"{_probant.Name}*"); // Filtruję pliki, których nazwy zaczynają się od imienia probanta
+            FileInfo[] filesWithProbantName;
             BitmapImage bitmapImage;
             int index = -1;
 
@@ -63,7 +70,15 @@ namespace FamilyTreeManager
             else if (files.Length > 1)
             {
                 Regex regex = new Regex(@"\b" + _probant.Name + @"\b");
-                index = Array.FindIndex(files, file => regex.Match(file.Name.Split()[0]).Success);
+                filesWithProbantName = Array.FindAll(files, file => regex.Match(file.Name.Split()[0]).Success);
+
+                if (filesWithProbantName.Length == 1)
+                {
+                    index = 0;
+                    files = filesWithProbantName;
+                }
+                else
+                    index = Array.FindIndex(files, file => file.Name.Remove(file.Name.Length - 4, 4) == _probant.Surname); // TODO do poprawienia
             }
 
             if (index != -1)
@@ -116,14 +131,15 @@ namespace FamilyTreeManager
             treeViewItem.Header = person.ToString();
             treeViewItem.Cursor = Cursors.Hand;
             treeViewItem.DataContext = person;
-            //treeViewItem.MouseDoubleClick += Person_MouseDoubleClick;
+            treeViewItem.Foreground = person.IsMale ? Brushes.Blue : new SolidColorBrush(Color.FromRgb(163, 0, 112));
+            treeViewItem.MouseDoubleClick += Person_MouseDoubleClick;
             precedentTreeViewItem.Items.Add(treeViewItem);
             ChangeTreeViewFontWeight(person, treeViewItem);
 
             //SetToolTip(person, treeViewItem, kinshipName);
 
             return treeViewItem;
-        }
+        }      
 
         private void ChangeTreeViewFontWeight(Person person, TreeViewItem treeViewItem)
         {
@@ -180,6 +196,7 @@ namespace FamilyTreeManager
             {
                 Values = new double[] { descendants.FindAll(per => per.IsMale).Count },
                 Name = "Mężczyźni",
+                Fill = new SolidColorPaint(SKColors.LightSkyBlue),
                 DataLabelsSize = 19,
                 DataLabelsPaint = new SolidColorPaint(SKColors.Black)
             };
@@ -190,6 +207,7 @@ namespace FamilyTreeManager
             {
                 Values = new double[] { descendants.FindAll(per => !per.IsMale).Count },
                 Name = "Kobiety",
+                Fill = new SolidColorPaint(SKColors.HotPink),
                 DataLabelsSize = 19,
                 DataLabelsPaint = new SolidColorPaint(SKColors.Black)
             };
@@ -200,7 +218,7 @@ namespace FamilyTreeManager
 
             descendantsSexPieChart.Title = new LabelVisual
             {
-                Text = "Potomkowie według płci",
+                Text = "Płeć potomków",
                 TextSize = 28,
                 Paint = new SolidColorPaint(SKColors.Black)
             };
@@ -211,7 +229,10 @@ namespace FamilyTreeManager
             Person ancestor = _probant.GetMostDistantAncestorInMaleLine();
 
             if (ancestor != _probant)
+            {
+                mostDistantMaleAncestorTitle.Visibility = Visibility.Visible;
                 mostDistantMaleAncestor.Content = ancestor.ShowLongerPersonDescription();
+            }
             else
                 mostDistantMaleAncestorTitle.Visibility = Visibility.Hidden;
         }
@@ -221,7 +242,10 @@ namespace FamilyTreeManager
             Person ancestor = _probant.GetMostDistantAncestorInFemaleLine();
 
             if (ancestor != _probant)
+            {
+                mostDistantFemaleAncestorTitle.Visibility = Visibility.Visible;
                 mostDistantFemaleAncestor.Content = ancestor.ShowLongerPersonDescription();
+            }
             else
                 mostDistantFemaleAncestorTitle.Visibility = Visibility.Hidden;
         }
@@ -230,8 +254,35 @@ namespace FamilyTreeManager
         {
             if (_probant.Nationalities.Count == 0)
                 nationalitiesRadioButton.Visibility = Visibility.Hidden;
+            else
+                nationalitiesRadioButton.Visibility = Visibility.Visible;
+
             if (_probant.Children.Count == 0)
                 descendantsRadioButton.Visibility = Visibility.Hidden;
+            else
+                descendantsRadioButton.Visibility = Visibility.Visible;
+        }
+
+        private void ResetWindow()
+        {
+            grandparentsTreeView.Items.Clear();
+            parentsTreeView.Items.Clear();
+            siblingsTreeView.Items.Clear();
+            partnersTreeView.Items.Clear();
+            descendantsTreeView.Items.Clear();
+
+            ancestorsButton.IsEnabled = true;
+            descendantsButton.IsEnabled = true;
+            ancestorsLabel.Content = null;
+            descendantsLabel.Content = null;
+
+            mostDistantMaleAncestorTitle.Visibility = Visibility.Hidden;
+            mostDistantMaleAncestor.Content = null;
+            mostDistantFemaleAncestorTitle.Visibility = Visibility.Hidden;
+            mostDistantFemaleAncestor.Content = null;
+
+            nationalitiesPieChart.Series = null;
+            descendantsSexPieChart.Series = null;
         }
 
         private void ancestorsButton_Click(object sender, RoutedEventArgs e)
@@ -260,6 +311,33 @@ namespace FamilyTreeManager
         {
             descendantsSexPieChart.Visibility = Visibility.Hidden;
             nationalitiesPieChart.Visibility = Visibility.Visible;
+        }
+
+        private void Person_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true; // Dzięki tej linijce event wykonuje się tylko raz
+
+            if (_wasGrandchildClicked)
+            {
+                _wasGrandchildClicked = false;
+                return;
+            }
+
+            if (sender is TreeViewItem)
+            {
+                TreeViewItem treeViewItem = (TreeViewItem)sender;
+                _probant = (Person)treeViewItem.DataContext;
+
+                if (((TreeViewItem)treeViewItem.Parent).DataContext is Person)
+                    _wasGrandchildClicked = true;
+            }
+            else if (sender is TextBlock && e.ClickCount == 2)
+                _probant = (Person)((TextBlock)sender).DataContext;
+            else
+                return;
+
+            ResetWindow();
+            SetWindowControls();
         }
     }
 }

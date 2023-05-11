@@ -360,9 +360,9 @@ namespace FamilyTreeManager
 
         public void CalculateRelativesDensityFactor()
         {
-            int a = GetParents.ToList().FindAll(per => per != null).Count * 100;
-            int b = GetGrandparents.ToList().FindAll(per => per != null).Count * 80;
-            int c = GetGreatGrandparents.ToList().FindAll(per => per != null).Count * 60;
+            int a = Array.FindAll(GetParents, per => per != null).Length * 100;
+            int b = Array.FindAll(GetGrandparents, per => per != null).Length * 80;
+            int c = Array.FindAll(GetGreatGrandparents, per => per != null).Length * 60;
 
             int d = Children.Count * 100;
             int e = GetGrandchildren.Count * 80;

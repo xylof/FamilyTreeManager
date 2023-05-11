@@ -35,7 +35,9 @@ namespace FamilyTreeManager
             _families = peopleAndFamilies.families;
 
             CalculateRelativesDensityFactorForAllPeople();
-            CreateTable(_people);
+            CreateTable();
+
+            CalculateNationalities();
         }
 
         private void CalculateRelativesDensityFactorForAllPeople()
@@ -44,7 +46,7 @@ namespace FamilyTreeManager
                 person.CalculateRelativesDensityFactor();
         }
 
-        private void CreateTable(List<Person> people)
+        private void CreateTable()
         {
             DataTable table = new DataTable("Wszystkie osoby");
             DataColumn column;
@@ -116,7 +118,7 @@ namespace FamilyTreeManager
             DataSet dataSet = new DataSet();
             dataSet.Tables.Add(table);
 
-            foreach (Person person in people)
+            foreach (Person person in _people)
             {
                 row = table.NewRow();
                 row["ID"] = person.ID;
@@ -132,6 +134,46 @@ namespace FamilyTreeManager
             }
 
             dataGrid.ItemsSource = dataSet.Tables["Wszystkie osoby"].DefaultView;
+        }
+
+        private void CalculateNationalities()
+        {
+            foreach (Person person in _people)
+                CalculateNationalities(person);
+        }
+
+        private Dictionary<string, double> CalculateNationalities(Person person)
+        {
+            if (person == null)
+                return new Dictionary<string, double>(); // ewentulanie return null
+
+            if (person.Nationalities.Count == 0)
+            {
+                Dictionary<string, double> fatherNationalities = CalculateNationalities(person.Father);
+                Dictionary<string, double> motherNationalities = CalculateNationalities(person.Mother);
+
+                Dictionary<string, double> dictionaryWithAveragedValues = GetDictionaryWithAveragedValues(fatherNationalities, motherNationalities);
+                person.Nationalities = dictionaryWithAveragedValues;
+
+                return dictionaryWithAveragedValues;
+            }
+            else
+                return person.Nationalities;
+        }
+
+        private Dictionary<string, double> GetDictionaryWithAveragedValues(Dictionary<string, double> dict1, Dictionary<string, double> dict2)
+        {
+            Dictionary<string, double> averagedNationalities = dict1.ToDictionary(pair => pair.Key, pair => Math.Round(pair.Value / 2, 2));
+
+            foreach (KeyValuePair<string, double> keyValuePair in dict2)
+            {
+                if (!averagedNationalities.ContainsKey(keyValuePair.Key))
+                    averagedNationalities[keyValuePair.Key] = Math.Round(keyValuePair.Value / 2, 2);
+                else
+                    averagedNationalities[keyValuePair.Key] += Math.Round(keyValuePair.Value / 2, 2);
+            }
+
+            return averagedNationalities.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         private void MenuItem1_Click(object sender, RoutedEventArgs e)

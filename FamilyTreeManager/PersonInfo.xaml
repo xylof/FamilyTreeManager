@@ -66,13 +66,12 @@
             </Grid>
 
             <TreeView Grid.Column="1" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" Width="400" Height="1000" BorderThickness="0" Padding="0,5">
-                <TreeViewItem Name="familyTreeView" Header="Najbliższa rodzina" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed">
-                    <TreeViewItem Name="grandparentsTreeView" Header="Dziadkowie" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
-                    <TreeViewItem Name="parentsTreeView" Header="Rodzice" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
-                    <TreeViewItem Name="siblingsTreeView" Header="Rodzeństwo" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
-                    <TreeViewItem Name="partnersTreeView" Header="Partnerzy" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
-                    <TreeViewItem Name="descendantsTreeView" Header="Dzieci i wnuki" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True" Foreground="DarkRed"/>
-                </TreeViewItem>
+                <TreeViewItem Name="familyTreeView" Header="Najbliższa rodzina" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
+                <TreeViewItem Name="grandparentsTreeView" Header="Dziadkowie" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
+                <TreeViewItem Name="parentsTreeView" Header="Rodzice" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
+                <TreeViewItem Name="siblingsTreeView" Header="Rodzeństwo" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
+                <TreeViewItem Name="partnersTreeView" Header="Partnerzy" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
+                <TreeViewItem Name="descendantsTreeView" Header="Dzieci i wnuki" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
             </TreeView>
 
             <Grid Grid.Column="2">
@@ -81,8 +80,8 @@
                     <RowDefinition Height="200"/>
                 </Grid.RowDefinitions>
 
-                <lvc:PieChart Grid.Row="0" Name="descendantsSexPieChart" Width="700" Height="600" LegendPosition="Right" Visibility="Visible"/>
-                <lvc:PieChart Grid.Row="0" Name="nationalitiesPieChart" Width="700" Height="600" LegendPosition="Right" Visibility="Hidden"/>
+                <lvc:PieChart Grid.Row="0" Name="descendantsSexPieChart" Width="750" Height="600" LegendPosition="Right" Visibility="Visible"/>
+                <lvc:PieChart Grid.Row="0" Name="nationalitiesPieChart" Width="750" Height="600" LegendPosition="Right" Visibility="Hidden"/>
 
                 <StackPanel Grid.Row="1" Width="600">
                     <RadioButton x:Name="descendantsRadioButton" Content="Płeć potomków" FontSize="16" FontWeight="Medium" Margin="5" IsChecked="True" Checked="descendantsRadioButton_Checked"/>
