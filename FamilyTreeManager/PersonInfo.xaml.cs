@@ -57,6 +57,8 @@ namespace FamilyTreeManager
             ShowPieChartWithNationalities();
             ShowPieChartWithDescendantsSex();
 
+            ChoosePieChartToBeVisible();
+
             SetRadioButtonsVisibility();
         }
 
@@ -155,6 +157,16 @@ namespace FamilyTreeManager
             if (_probant.Nationalities.Count == 0)
                 return;
 
+            nationalitiesPieChart = new LiveChartsCore.SkiaSharpView.WPF.PieChart()
+            {
+                Width = 900,
+                Height = 600,
+                LegendPosition = LiveChartsCore.Measure.LegendPosition.Right,
+                Visibility = Visibility.Hidden
+            };
+
+            pieChartsGrid.Children.Add(nationalitiesPieChart);
+
             List<ISeries> series = new List<ISeries>();
 
             foreach (KeyValuePair<string, double> keyValuePair in _probant.Nationalities)
@@ -162,11 +174,11 @@ namespace FamilyTreeManager
                 PieSeries<double> pieSeries = new PieSeries<double>
                 {
                     Values = new double[] { keyValuePair.Value },
-                    Name = $"{keyValuePair.Key} {GetChartLabelInAppropriateFormat(keyValuePair.Value)}",
+                    Name = $"{keyValuePair.Key} {$"{keyValuePair.Value:0.##}"}",
                     DataLabelsSize = 19,
                     DataLabelsPaint = new SolidColorPaint(SKColors.Black),
                     DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle,
-                    DataLabelsFormatter = point => $"{keyValuePair.Key}{Environment.NewLine}{GetChartLabelInAppropriateFormat(point.PrimaryValue)}"
+                    DataLabelsFormatter = point => $"{keyValuePair.Key}{Environment.NewLine}{$"{point.PrimaryValue:0.##}"}"
                 };
 
                 series.Add(pieSeries);
@@ -182,15 +194,20 @@ namespace FamilyTreeManager
             };
         }
 
-        private string GetChartLabelInAppropriateFormat(double chartPointValue)
-        {
-            return $"{(chartPointValue >= 1 ? chartPointValue : chartPointValue.ToString("N2"))}%";
-        }
-
         private void ShowPieChartWithDescendantsSex()
         {
             if (_probant.Children.Count == 0)
                 return;
+
+            descendantsSexPieChart = new LiveChartsCore.SkiaSharpView.WPF.PieChart()
+            {
+                Width = 900,
+                Height = 600,
+                LegendPosition = LiveChartsCore.Measure.LegendPosition.Right,
+                Visibility = Visibility.Visible
+            };
+
+            pieChartsGrid.Children.Add(descendantsSexPieChart);
 
             List<Person> descendants = _probant.GetAllDescendants();
             List<ISeries> series = new List<ISeries>();
@@ -285,7 +302,9 @@ namespace FamilyTreeManager
             mostDistantFemaleAncestor.Content = null;
 
             nationalitiesPieChart.Series = null;
+            nationalitiesPieChart.Title = null;
             descendantsSexPieChart.Series = null;
+            descendantsSexPieChart.Title = null;
         }
 
         private void backButton_Click(object sender, RoutedEventArgs e)
@@ -355,14 +374,32 @@ namespace FamilyTreeManager
 
         private void descendantsRadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            descendantsSexPieChart.Visibility = Visibility.Visible;
-            nationalitiesPieChart.Visibility = Visibility.Hidden;
+            MakeDescendantsSexPieChartVisible();
         }
 
         private void nationalitiesRadioButton_Checked(object sender, RoutedEventArgs e)
         {
+            MakeNationalitiesPieChartVisible();
+        }
+
+        private void MakeDescendantsSexPieChartVisible()
+        {
+            descendantsSexPieChart.Visibility = Visibility.Visible;
+            nationalitiesPieChart.Visibility = Visibility.Hidden;
+        }
+
+        private void MakeNationalitiesPieChartVisible()
+        {
             descendantsSexPieChart.Visibility = Visibility.Hidden;
             nationalitiesPieChart.Visibility = Visibility.Visible;
+        }
+
+        private void ChoosePieChartToBeVisible()
+        {
+            if ((bool)descendantsRadioButton.IsChecked)
+                MakeDescendantsSexPieChartVisible();
+            else
+                MakeNationalitiesPieChartVisible();
         }
 
         private void Person_MouseDoubleClick(object sender, MouseButtonEventArgs e)
