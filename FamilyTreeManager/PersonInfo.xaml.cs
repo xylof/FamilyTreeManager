@@ -28,13 +28,16 @@ namespace FamilyTreeManager
     {
         private Person _probant;
         private bool _wasGrandchildClicked;
+        private List<Person> _displayedFamilyNodes;
+        private int _currentFamilyNodeIndex;
         private string _imagesDirectory = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).ToString()).ToString()).ToString() + "\\Images";
 
-        internal PersonInfo(Person probant)
+        internal PersonInfo(Person probant, List<Person> displayedFamilyNodes)
         {
             InitializeComponent();
-
             _probant = probant;
+            _displayedFamilyNodes = displayedFamilyNodes;
+            _currentFamilyNodeIndex = 0;
             SetWindowControls();
         }
 
@@ -285,6 +288,55 @@ namespace FamilyTreeManager
             descendantsSexPieChart.Series = null;
         }
 
+        private void backButton_Click(object sender, RoutedEventArgs e)
+        {
+            _currentFamilyNodeIndex--;
+            _probant = _displayedFamilyNodes[_currentFamilyNodeIndex];
+            ResetWindow();
+            SetWindowControls();
+
+            forwardButton.IsEnabled = true;
+            forwardButton.Opacity = 1;
+
+            if (_currentFamilyNodeIndex == 0)
+            {
+                backButton.IsEnabled = false;
+                backButton.Opacity = 0.6;
+            }
+        }
+
+        private void forwardButton_Click(object sender, RoutedEventArgs e)
+        {
+            _currentFamilyNodeIndex++;
+            _probant = _displayedFamilyNodes[_currentFamilyNodeIndex];
+            ResetWindow();
+            SetWindowControls();
+
+            if (_currentFamilyNodeIndex == _displayedFamilyNodes.Count - 1)
+            {
+                forwardButton.IsEnabled = false;
+                forwardButton.Opacity = 0.6;
+            }
+
+            if (_displayedFamilyNodes.Count > 1)
+            {
+                backButton.IsEnabled = true;
+                backButton.Opacity = 1;
+            }
+        }
+
+        private void Polygon_MouseMove(object sender, MouseEventArgs e)
+        {
+            Polygon polygon = (Polygon)sender;
+            polygon.Fill = Brushes.Aqua;
+        }
+
+        private void Polygon_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Polygon polygon = (Polygon)sender;
+            polygon.Fill = Brushes.Brown;
+        }
+
         private void ancestorsButton_Click(object sender, RoutedEventArgs e)
         {
             ((Button)sender).IsEnabled = false;
@@ -315,7 +367,7 @@ namespace FamilyTreeManager
 
         private void Person_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            e.Handled = true; // Dzięki tej linijce event wykonuje się tylko raz
+            e.Handled = true; // Dzięki tej linijce event wykonuje się tylko raz (z wyjątkiem kliknięcia we wnuka)
 
             if (_wasGrandchildClicked)
             {
@@ -335,6 +387,19 @@ namespace FamilyTreeManager
                 _probant = (Person)((TextBlock)sender).DataContext;
             else
                 return;
+
+            if (_displayedFamilyNodes.Count > _currentFamilyNodeIndex + 1)
+            {
+                _displayedFamilyNodes.RemoveRange(_currentFamilyNodeIndex + 1, _displayedFamilyNodes.Count - _currentFamilyNodeIndex - 1);
+                forwardButton.IsEnabled = false;
+                forwardButton.Opacity = 0.6;
+            }
+
+            _displayedFamilyNodes.Add(_probant);
+            _currentFamilyNodeIndex++;
+
+            backButton.IsEnabled = true;
+            backButton.Opacity = 1;
 
             ResetWindow();
             SetWindowControls();

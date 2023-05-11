@@ -181,8 +181,9 @@ namespace FamilyTreeManager
             DataGrid dataGrid = (DataGrid)dataGridContextMenu.PlacementTarget;
             string personID = ((DataRowView)dataGrid.CurrentCell.Item).Row.ItemArray[0].ToString();
             Person person = _people.Find(per => per.ID == personID);
+            List<Person> displayedFamilyNodes = new List<Person> { person };
 
-            PersonInfo personInfo = new PersonInfo(person);
+            PersonInfo personInfo = new PersonInfo(person, displayedFamilyNodes);
             personInfo.Owner = this;
             personInfo.Show();
         }

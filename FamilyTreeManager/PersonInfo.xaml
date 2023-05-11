@@ -15,8 +15,42 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Grid.ColumnSpan="3" Background="#FFE6DA64">
-            <Label HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="personLabel" FontSize="20"/>
+        <Grid Grid.Row="0" Background="#FFE6DA64">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="700"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="personLabel" FontSize="20"/>
+
+            <Button Grid.Column="0" Name="backButton" Height="40" Width="120" HorizontalAlignment="Right" FontWeight="Medium" FontSize="13" IsEnabled="False" Opacity="0.6" Click="backButton_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <Polygon Points= "30,0 0,20, 30,40 20,20" Stroke="Black" Fill="Brown" Cursor="Hand" MouseMove="Polygon_MouseMove" MouseLeave="Polygon_MouseLeave"/>
+                                <Rectangle Width="100" Height="40" Stroke="Transparent" Fill="Transparent" VerticalAlignment="Top"/>
+                            </StackPanel>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="Wstecz"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Grid.Column="2" Name="forwardButton" Height="40" Width="105" HorizontalAlignment="Left" FontWeight="Medium" FontSize="13" IsEnabled="False" Opacity="0.6" Click="forwardButton_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="75" Height="40" Stroke="Transparent" Fill="Transparent" VerticalAlignment="Top"/>
+                                <Polygon Points= "0,0 30,20, 0,40 10,20" Stroke="Black" Fill="Brown" Cursor="Hand" MouseMove="Polygon_MouseMove" MouseLeave="Polygon_MouseLeave"/>
+                            </StackPanel>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="Dalej"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </Grid>
 
         <Grid Grid.Row="1">
@@ -74,14 +108,14 @@
                 <TreeViewItem Name="descendantsTreeView" Header="Dzieci i wnuki" FontSize="16" FontWeight="Bold" Focusable="False" IsExpanded="True"/>
             </TreeView>
 
-            <Grid Grid.Column="2">
+            <Grid Grid.Column="2" Name="pieChartsGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="200"/>
                 </Grid.RowDefinitions>
 
-                <lvc:PieChart Grid.Row="0" Name="descendantsSexPieChart" Width="750" Height="600" LegendPosition="Right" Visibility="Visible"/>
-                <lvc:PieChart Grid.Row="0" Name="nationalitiesPieChart" Width="750" Height="600" LegendPosition="Right" Visibility="Hidden"/>
+                <lvc:PieChart Grid.Row="0" Name="descendantsSexPieChart" Width="900" Height="600" LegendPosition="Right" Visibility="Visible"/>
+                <lvc:PieChart Grid.Row="0" Name="nationalitiesPieChart" Width="900" Height="600" LegendPosition="Right" Visibility="Hidden"/>
 
                 <StackPanel Grid.Row="1" Width="600">
                     <RadioButton x:Name="descendantsRadioButton" Content="Płeć potomków" FontSize="16" FontWeight="Medium" Margin="5" IsChecked="True" Checked="descendantsRadioButton_Checked"/>
