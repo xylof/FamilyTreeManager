@@ -61,6 +61,8 @@ namespace FamilyTreeManager
                 Margin = new Thickness(0, 20, 0, 0),
                 DataContext = progenitorTreeViewItem
             };
+            checkBox.Checked += CheckBox_Checked;
+            checkBox.Unchecked += CheckBox_Unchecked;
 
             rootTreeView.Items.Add(checkBox);
             rootTreeView.Items.Add(progenitorTreeViewItem);
@@ -81,7 +83,8 @@ namespace FamilyTreeManager
                     {
                         Header = $"{parentGeneration + 1}) {child.ShowLongerPersonDescription()}",
                         FontWeight = FontWeights.DemiBold,
-                        IsExpanded = true
+                        IsExpanded = true,
+                        DataContext = child
                     };
 
                     parentTreeViewItem.Items.Add(childTreeViewItem);
@@ -92,9 +95,13 @@ namespace FamilyTreeManager
                 }
             }
 
-            progenitorTreeViewItem.DataContext = peopleCounter;
+            progenitorTreeViewItem.DataContext = (progenitor, peopleCounter);
         }
 
+        // W poniższej metodzie duża część kodu jest związana z tym, że gdy dana linia (ród) jest ustawiana jako niewidoczna, to powiązany z nią CheckBox jest przenoszony z jednego miejsca w drugie.
+        // Nie wystarczy mu po prostu ustawić właściwości Visibility jako Collapsed, bo wtedy pozostaje po nim sztucznie rozbuchana pusta przestrzeń, a im więcej takich przestrzeni obok siebie,
+        // tym gorzej to wygląda na ekranie. Dlatego trzeba było zastosować trik polegający na tym, aby, stosując analogię, zdejmować CheckBoxa ze stołu i chować go do kufra pod stołem, gdy linia ma
+        // być niewidoczna oraz wyjmowac go z kufra i z powrotem stawiać na stole, gdy linia ma być widoczna
         private void DisplayLinesWithGivenPeopleAmount(TextBox minTextBox, TextBox maxTextBox, TreeView sexTreeView)
         {
             int minPeopleAmount = int.Parse(minTextBox.Text);
@@ -109,7 +116,8 @@ namespace FamilyTreeManager
                     CheckBox checkBox = item as CheckBox;
                     TreeViewItem progenitorTreeViewItem = checkBox.DataContext as TreeViewItem; // Wyciągamy TreeViewItema powiązanego z aktualnym CheckBoxem
 
-                    int linePeopleAmount = Convert.ToInt32(progenitorTreeViewItem.DataContext); // Wyciągamy informację o tym, ile osób zawiera aktualna linia (ród)
+                    var progenitorAndPeopleCounter = ((Person progenitor, int peopleCounter))progenitorTreeViewItem.DataContext;
+                    int linePeopleAmount = progenitorAndPeopleCounter.peopleCounter; // Wyciągamy informację o tym, ile osób zawiera aktualna linia (ród)
 
                     if (minPeopleAmount > linePeopleAmount || linePeopleAmount > maxPeopleAmount) // Jeśli liczba osób w linii NIE mieści się w zakresie wyznaczonym przez wartości min. i maks...
                     {
@@ -126,7 +134,8 @@ namespace FamilyTreeManager
                     if (progenitorTreeViewItem.Visibility == Visibility.Visible) // Jeśli aktualna linia jest widoczna na ekranie, to wychodzimy z tego miejsca i pętla przechodzi do kolejnego elementu
                         continue;
 
-                    int linePeopleAmount = Convert.ToInt32(progenitorTreeViewItem.DataContext); // Wyciągamy informację o tym, ile osób zawiera aktualna linia (ród)
+                    var progenitorAndPeopleCounter = ((Person progenitor, int peopleCounter))progenitorTreeViewItem.DataContext;
+                    int linePeopleAmount = progenitorAndPeopleCounter.peopleCounter; // Wyciągamy informację o tym, ile osób zawiera aktualna linia (ród)
 
                     if (minPeopleAmount <= linePeopleAmount && linePeopleAmount <= maxPeopleAmount) // Jeśli liczba osób w linii mieści się w zakresie wyznaczonym przez wartości min. i maks...
                     {
@@ -152,6 +161,62 @@ namespace FamilyTreeManager
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             DisplayLinesWithGivenPeopleAmount(minFemaleLinesTextBox, maxFemaleLinesTextBox, femaleLinesTreeView);
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckBox checkBox = sender as CheckBox;
+            checkBox.Background = Brushes.Turquoise;
+            TreeViewItem progenitorTreeViewItem = checkBox.DataContext as TreeViewItem;
+
+            var progenitorAndPeopleCounter = ((Person progenitor, int peopleCounter))progenitorTreeViewItem.DataContext;
+            Person progenitor = progenitorAndPeopleCounter.progenitor;
+
+            IterateThroughAllItemsInSuitableSexTreeView(progenitor, FontWeights.Heavy);
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            CheckBox checkBox = sender as CheckBox;
+            checkBox.Background = Brushes.White;
+            TreeViewItem progenitorTreeViewItem = checkBox.DataContext as TreeViewItem;
+
+            var progenitorAndPeopleCounter = ((Person progenitor, int peopleCounter))progenitorTreeViewItem.DataContext;
+            Person progenitor = progenitorAndPeopleCounter.progenitor;
+
+            IterateThroughAllItemsInSuitableSexTreeView(progenitor, FontWeights.DemiBold);
+        }
+
+        private void IterateThroughAllItemsInSuitableSexTreeView(Person progenitor, FontWeight fontWeight)
+        {
+            TreeView sexTreeView;
+
+            if (progenitor.IsMale)
+                sexTreeView = femaleLinesTreeView;
+            else
+                sexTreeView = maleLinesTreeView;
+
+            foreach (var item in sexTreeView.Items)
+                if (item is TreeViewItem)
+                {
+                    TreeViewItem progenitorTreeViewItem = item as TreeViewItem;
+                    ChangeLookOfSuitableTreeViewItems(progenitorTreeViewItem, progenitor, fontWeight);
+                }
+        }
+
+        private void ChangeLookOfSuitableTreeViewItems(TreeViewItem treeViewItem, Person progenitor, FontWeight fontWeight)
+        {
+            foreach (var item in treeViewItem.Items)
+                if (item is TreeViewItem)
+                {
+                    TreeViewItem childTreeViewItem = item as TreeViewItem;
+                    Person person = childTreeViewItem.DataContext as Person;
+
+                    if (person.MostDistantAncestorInMaleLine == progenitor || person.MostDistantAncestorInFemaleLine == progenitor)
+                        childTreeViewItem.FontWeight = fontWeight;
+
+                    ChangeLookOfSuitableTreeViewItems(childTreeViewItem, progenitor, fontWeight);
+                }
         }
     }
 }
