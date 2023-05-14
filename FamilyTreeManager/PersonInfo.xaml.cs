@@ -41,8 +41,6 @@ namespace FamilyTreeManager
             SetWindowControls();
         }
 
-        //public IEnumerable<ISeries> Series { get; set; }
-
         private void SetWindowControls()
         {
             personLabel.Content = _probant.ShowLongerPersonDescription();
@@ -174,11 +172,11 @@ namespace FamilyTreeManager
                 PieSeries<double> pieSeries = new PieSeries<double>
                 {
                     Values = new double[] { keyValuePair.Value },
-                    Name = $"{keyValuePair.Key} {$"{keyValuePair.Value:0.##}"}",
-                    DataLabelsSize = 19,
+                    Name = $"{keyValuePair.Key} {$"{keyValuePair.Value:0.##}"}%",
+                    DataLabelsSize = 17,
                     DataLabelsPaint = new SolidColorPaint(SKColors.Black),
                     DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle,
-                    DataLabelsFormatter = point => $"{keyValuePair.Key}{Environment.NewLine}{$"{point.PrimaryValue:0.##}"}"
+                    DataLabelsFormatter = point => $"{keyValuePair.Key} {$"{point.PrimaryValue:0.##}"}%"
                 };
 
                 series.Add(pieSeries);
@@ -246,9 +244,9 @@ namespace FamilyTreeManager
 
         private void DisplayMostDistantAncestorInMaleLine()
         {
-            Person ancestor = _probant.GetMostDistantAncestorInMaleLine();
+            Person ancestor = _probant.MostDistantAncestorInMaleLine;
 
-            if (ancestor != _probant)
+            if (ancestor != null)
             {
                 mostDistantMaleAncestorTitle.Visibility = Visibility.Visible;
                 mostDistantMaleAncestor.Content = ancestor.ShowLongerPersonDescription();
@@ -259,9 +257,9 @@ namespace FamilyTreeManager
 
         private void DisplayMostDistantAncestorInFemaleLine()
         {
-            Person ancestor = _probant.GetMostDistantAncestorInFemaleLine();
+            Person ancestor = _probant.MostDistantAncestorInFemaleLine;
 
-            if (ancestor != _probant)
+            if (ancestor != null)
             {
                 mostDistantFemaleAncestorTitle.Visibility = Visibility.Visible;
                 mostDistantFemaleAncestor.Content = ancestor.ShowLongerPersonDescription();

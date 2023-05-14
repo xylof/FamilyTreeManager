@@ -23,11 +23,8 @@
                 <Separator/>
                 <MenuItem Header="Zamknij" Foreground="Black" />
             </MenuItem>
-            <MenuItem x:Name="windowsTab" Header="_Okna" FontSize="17">
-                <MenuItem x:Name="tableOption" Header="Tabela wszystkich osób" Foreground="Black" IsEnabled="False" />
-                <MenuItem x:Name="bookOption" Header="Księga historyczna" Foreground="Black" IsEnabled="False" />
-                <MenuItem x:Name="chartsOption" Header="Wykresy i statystyki" Foreground="Black" IsEnabled="False" />
-                <MenuItem x:Name="analyzerOption" Header="Analizator drzew genealogicznych" Foreground="Black" />
+            <MenuItem x:Name="windowsTab" Header="_Opcje" FontSize="17">
+                <MenuItem x:Name="maleAndFemaleLinesOption" Header="Męskie i żeńskie rody" Foreground="Black" Click="MaleAndFemaleLinesOption_Click"/>
             </MenuItem>
         </Menu>
 

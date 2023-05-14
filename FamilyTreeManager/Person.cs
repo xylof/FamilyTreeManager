@@ -29,6 +29,8 @@ namespace FamilyTreeManager
         public Person Mother { get; set; }
         public List<Person> Partners { get; set; }
         public List<Person> Children { get; set; }
+        public Person MostDistantAncestorInMaleLine { get; set; }
+        public Person MostDistantAncestorInFemaleLine { get; set; }
         public int RelativesDensityFactor { get; private set; }
 
         public Person()
@@ -427,14 +429,23 @@ namespace FamilyTreeManager
             return descendants;
         }
 
-        public Person GetMostDistantAncestorInMaleLine()
+        public void SetMostDistantAncestorsInMaleAndFemaleLines()
+        {
+            Person maleAncestor = GetMostDistantAncestorInMaleLine();
+            Person femaleAncestor = GetMostDistantAncestorInFemaleLine();
+
+            MostDistantAncestorInMaleLine = maleAncestor != this ? maleAncestor : null;
+            MostDistantAncestorInFemaleLine = femaleAncestor != this ? femaleAncestor : null;
+        }
+
+        private Person GetMostDistantAncestorInMaleLine()
         {
             if (Father != null)
                 return Father.GetMostDistantAncestorInMaleLine();
             return this;
         }
 
-        public Person GetMostDistantAncestorInFemaleLine()
+        private Person GetMostDistantAncestorInFemaleLine()
         {
             if (Mother != null)
                 return Mother.GetMostDistantAncestorInFemaleLine();

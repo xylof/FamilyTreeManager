@@ -2,17 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FamilyTreeManager
 {
@@ -29,15 +21,16 @@ namespace FamilyTreeManager
             InitializeComponent();
 
             GedcomFileReader gedcomFileReader = new GedcomFileReader();
-            var peopleAndFamilies = gedcomFileReader.ReadGedcomFile(@"C:\Users\Marek\Downloads\m0kd51_64943600221ywr561r4h45_A.ged");
+            var peopleAndFamilies = gedcomFileReader.ReadGedcomFile(@"C:\Users\Marek\Downloads\453e8b_379006ebks58y631435935_A.ged");
 
             _people = peopleAndFamilies.people;
             _families = peopleAndFamilies.families;
 
             CalculateRelativesDensityFactorForAllPeople();
-            CreateTable();
+            CalculateNationalitiesForAllPeople();
+            SetMostDistantAncestorsInMaleAndFemaleLinesForAllPeople();
 
-            CalculateNationalities();
+            CreateTable();
         }
 
         private void CalculateRelativesDensityFactorForAllPeople()
@@ -136,10 +129,16 @@ namespace FamilyTreeManager
             dataGrid.ItemsSource = dataSet.Tables["Wszystkie osoby"].DefaultView;
         }
 
-        private void CalculateNationalities()
+        private void CalculateNationalitiesForAllPeople()
         {
             foreach (Person person in _people)
                 CalculateNationalities(person);
+        }
+
+        private void SetMostDistantAncestorsInMaleAndFemaleLinesForAllPeople()
+        {
+            foreach (Person person in _people)
+                person.SetMostDistantAncestorsInMaleAndFemaleLines();
         }
 
         private Dictionary<string, double> CalculateNationalities(Person person)
@@ -208,6 +207,13 @@ namespace FamilyTreeManager
             NamesAndSurnames namesAndSurnames = new NamesAndSurnames(person);
             namesAndSurnames.Owner = this;
             namesAndSurnames.Show();
+        }
+
+        private void MaleAndFemaleLinesOption_Click(object sender, RoutedEventArgs e)
+        {
+            MaleAndFemaleLines maleAndFemaleLines = new MaleAndFemaleLines(_people);
+            maleAndFemaleLines.Owner = this;
+            maleAndFemaleLines.Show();
         }
     }
 }
