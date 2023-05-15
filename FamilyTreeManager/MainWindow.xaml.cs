@@ -144,7 +144,7 @@ namespace FamilyTreeManager
         private Dictionary<string, double> CalculateNationalities(Person person)
         {
             if (person == null)
-                return new Dictionary<string, double>(); // ewentulanie return null
+                return new Dictionary<string, double>(); // TODO ewentulanie return null
 
             if (person.Nationalities.Count == 0)
             {
